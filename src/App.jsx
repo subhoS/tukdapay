@@ -14,6 +14,9 @@ import {
   Plus,
   Minus,
   Layers,
+  GitFork,
+  Star,
+  Code2,
 } from 'lucide-react'
 
 import Navbar from './components/Navbar'
@@ -24,6 +27,7 @@ import FullscreenQrModal from './components/FullscreenQrModal'
 import MdrCalculator from './components/MdrCalculator'
 import DukaanMode from './components/DukaanMode'
 import StoreSetupModal from './components/StoreSetupModal'
+import { GitHubIcon } from './components/PaymentLogos'
 import {
   calculateSplits,
   isValidUpiId,
@@ -754,9 +758,50 @@ export default function App() {
           </>
         )}
 
+        {/* Open Source & Fork on GitHub SEO Callout Card */}
+        <section className="rounded-3xl border border-sky-200/70 bg-gradient-to-br from-white via-[#F4FBFF] to-[#E8F7FE] p-5 sm:p-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1.5 max-w-md">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-[#00BAF2]/10 border border-[#00BAF2]/20 px-2.5 py-0.5 text-[11px] font-bold text-[#002970]">
+                <Code2 className="h-3 w-3 text-[#00BAF2]" />
+                <span>100% Free & Open Source</span>
+              </div>
+              <h2 className="text-base font-extrabold text-[#002970] flex items-center gap-1.5">
+                <span>Fork this Project on GitHub</span>
+              </h2>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                TukdaPay was created by <a href="https://github.com/subhoS" target="_blank" rel="noopener noreferrer" className="font-bold text-[#002970] hover:text-[#00BAF2] underline">Subhadeep Datta (@subhoS)</a> for small shopkeepers & developers. Fork the repository, customize the UI for your store, or contribute new features.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap sm:flex-col gap-2 w-full sm:w-auto shrink-0">
+              <a
+                href="https://github.com/subhoS/tukdapay"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl bg-[#002970] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#001D50] active:scale-95 shadow-sm transition"
+              >
+                <GitHubIcon className="h-4 w-4" />
+                <span>Fork on GitHub</span>
+                <GitFork className="h-3.5 w-3.5 text-[#00BAF2]" />
+              </a>
+
+              <a
+                href="https://github.com/subhoS/tukdapay"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 active:scale-95 shadow-xs transition"
+              >
+                <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-400" />
+                <span>Star Repository</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
         {/* Footer info & Links */}
-        <footer className="pt-4 pb-8 text-center text-xs text-slate-500 space-y-3">
-          <div className="flex items-center justify-center gap-4 text-slate-500 font-medium">
+        <footer className="pt-2 pb-8 text-center text-xs text-slate-500 space-y-3">
+          <div className="flex flex-wrap items-center justify-center gap-3 text-slate-500 font-medium">
             <button
               onClick={() => {
                 soundEffects.pop(isMuted)
@@ -776,9 +821,33 @@ export default function App() {
             >
               Digital Receipt
             </button>
+            <span>•</span>
+            <a
+              href="https://github.com/subhoS/tukdapay"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#00BAF2] font-semibold inline-flex items-center gap-1 transition"
+            >
+              <GitFork className="h-3 w-3 text-[#00BAF2]" />
+              <span>Fork Repo</span>
+            </a>
           </div>
-          <p className="text-[11px] text-slate-400">
-            TukdaPay is open client-side software. Compliant with standard NPCI UPI URI specifications. No data leaves your browser.
+
+          <div className="text-[11px] text-slate-500 flex flex-wrap items-center justify-center gap-1">
+            <span>Crafted by</span>
+            <a
+              href="https://github.com/subhoS"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-[#002970] hover:text-[#00BAF2] underline transition"
+            >
+              Subhadeep Datta (@subhoS)
+            </a>
+            <span>• Open Source under MIT • Client-Side Only</span>
+          </div>
+
+          <p className="text-[10px] text-slate-400">
+            TukdaPay is open client-side software compliant with NPCI UPI URI specifications. No payment or transaction data leaves your browser.
           </p>
         </footer>
 
