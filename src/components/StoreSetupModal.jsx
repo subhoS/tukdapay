@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { X, Store, Check, Volume2, ShieldCheck, Building2 } from 'lucide-react'
 import { isValidUpiId, POPULAR_UPI_HANDLES } from '../utils/upi'
 
@@ -13,12 +13,6 @@ export default function StoreSetupModal({
   const [storeName, setStoreName] = useState(currentStoreName || '')
   const [upiId, setUpiId] = useState(currentUpiId || '')
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    setStoreName(currentStoreName || '')
-    setUpiId(currentUpiId || '')
-    setError('')
-  }, [currentStoreName, currentUpiId, isOpen])
 
   if (!isOpen) return null
 
@@ -44,7 +38,7 @@ export default function StoreSetupModal({
     }
 
     if (!isValidUpiId(trimmedUpi)) {
-      setError('Please enter a valid UPI ID (e.g. yourname@oksbi or phone@paytm)')
+      setError('Please enter a valid UPI ID (e.g. store@oksbi or phone@paytm)')
       return
     }
 
@@ -89,7 +83,7 @@ export default function StoreSetupModal({
               type="text"
               value={storeName}
               onChange={(e) => setStoreName(e.target.value)}
-              placeholder="e.g. Sharma Kirana Store"
+              placeholder="e.g. Verma General Store"
               className="w-full rounded-xl border border-white/10 bg-black/40 py-2.5 px-3.5 text-sm text-white placeholder-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
             />
           </div>
@@ -118,7 +112,7 @@ export default function StoreSetupModal({
                 setUpiId(e.target.value)
                 setError('')
               }}
-              placeholder="e.g. sharma@okhdfcbank or 9876543210@paytm"
+              placeholder="e.g. store@okhdfcbank or 9876543210@paytm"
               className="w-full rounded-xl border border-white/10 bg-black/40 py-2.5 px-3.5 text-sm text-white font-mono placeholder-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
             />
 
@@ -135,22 +129,6 @@ export default function StoreSetupModal({
                   {handle}
                 </button>
               ))}
-            </div>
-
-            {/* Quick Demo Store Profile */}
-            <div className="flex items-center justify-between pt-1">
-              <span className="text-[11px] text-gray-400">Testing?</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setStoreName('Sharma Kirana Store')
-                  setUpiId('sharma@okhdfcbank')
-                  setError('')
-                }}
-                className="text-[11px] text-emerald-400 hover:text-emerald-300 font-semibold underline underline-offset-2 transition"
-              >
-                Use Demo Store Profile
-              </button>
             </div>
           </div>
 

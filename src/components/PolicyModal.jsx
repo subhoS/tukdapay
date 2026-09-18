@@ -1,5 +1,5 @@
 import React from 'react'
-import { X, ShieldAlert, CheckCircle2, AlertTriangle, Info, Award } from 'lucide-react'
+import { X, ShieldAlert, CheckCircle2, Info, Award } from 'lucide-react'
 
 export default function PolicyModal({ isOpen, onClose }) {
   if (!isOpen) return null

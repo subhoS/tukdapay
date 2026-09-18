@@ -54,8 +54,9 @@ export default function DukaanMode({
 
   const isHindi = dukaanLang === 'hi'
 
-  // Determine current active part
-  const currentPart = splits[activePartIndex] || splits[0] || null
+  // Determine current active part safely without setState in effect
+  const safePartIndex = splits.length > 0 && activePartIndex >= splits.length ? 0 : activePartIndex
+  const currentPart = splits[safePartIndex] || splits[0] || null
 
   // Generate UPI URI for active part
   const activeUpiUri = useMemo(() => {
@@ -70,10 +71,8 @@ export default function DukaanMode({
 
   // Generate QR code whenever active UPI URI changes
   useEffect(() => {
-    if (!activeUpiUri) {
-      setActiveQrUrl('')
-      return
-    }
+    if (!activeUpiUri) return
+    let isCurrent = true
 
     QRCode.toDataURL(activeUpiUri, {
       width: 360,
@@ -84,16 +83,17 @@ export default function DukaanMode({
       },
       errorCorrectionLevel: 'M',
     })
-      .then((url) => setActiveQrUrl(url))
+      .then((url) => {
+        if (isCurrent) setActiveQrUrl(url)
+      })
       .catch((err) => console.error('Dukaan QR generation error:', err))
+
+    return () => {
+      isCurrent = false
+    }
   }, [activeUpiUri])
 
-  // Clamp active part index if splits count shrinks
-  useEffect(() => {
-    if (activePartIndex >= splits.length && splits.length > 0) {
-      setActivePartIndex(0)
-    }
-  }, [splits.length, activePartIndex])
+  const qrUrlToDisplay = activeUpiUri ? activeQrUrl : ''
 
   const paidCount = paidStatus.filter(Boolean).length
   const isFullyPaid = splits.length > 0 && paidCount === splits.length
@@ -175,7 +175,7 @@ export default function DukaanMode({
 
     const partNum = currentPart.partNumber
     const partAmount = currentPart.amount
-    const isCurrentlyPaid = paidStatus[activePartIndex]
+    const isCurrentlyPaid = paidStatus[safePartIndex]
 
     if (!isCurrentlyPaid) {
       // Check if this action completes all payments
@@ -192,13 +192,13 @@ export default function DukaanMode({
       })
 
       // Notify parent with silent option so generic chime and confetti do not clash
-      onTogglePaid(activePartIndex, { silent: true })
+      onTogglePaid(safePartIndex, { silent: true })
 
       // If not fully paid, auto-advance to next UNPAID part (skipping already-paid parts)
       if (!willBeFullyPaid) {
         let nextUnpaidIndex = -1
         for (let step = 1; step < splits.length; step++) {
-          const checkIdx = (activePartIndex + step) % splits.length
+          const checkIdx = (safePartIndex + step) % splits.length
           if (!paidStatus[checkIdx]) {
             nextUnpaidIndex = checkIdx
             break
@@ -213,7 +213,7 @@ export default function DukaanMode({
     } else {
       // Unmarking
       soundEffects?.pop(isMuted)
-      onTogglePaid(activePartIndex, { silent: true })
+      onTogglePaid(safePartIndex, { silent: true })
     }
   }
 
@@ -572,7 +572,7 @@ export default function DukaanMode({
             <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar sm:grid sm:grid-cols-4">
               {splits.map((part, idx) => {
                 const isPaid = paidStatus[idx]
-                const isCurrent = activePartIndex === idx
+                const isCurrent = safePartIndex === idx
                 return (
                   <button
                     key={part.partNumber}
@@ -725,9 +725,9 @@ export default function DukaanMode({
 
                 {/* Big Scannable QR Code Canvas with High Contrast */}
                 <div className="rounded-3xl bg-white p-4 shadow-2xl inline-block border-4 border-emerald-500/30">
-                  {activeQrUrl ? (
+                  {qrUrlToDisplay ? (
                     <img
-                      src={activeQrUrl}
+                      src={qrUrlToDisplay}
                       alt={`Scan to Pay Part ${currentPart.partNumber}`}
                       className="h-64 w-64 sm:h-72 sm:w-72 object-contain rounded-xl"
                     />
@@ -767,14 +767,14 @@ export default function DukaanMode({
                     type="button"
                     onClick={handleMarkCurrentPaid}
                     className={`w-full flex items-center justify-center gap-2.5 rounded-2xl py-4 px-4 text-base font-extrabold shadow-xl transition-all duration-200 active:scale-95 ${
-                      paidStatus[activePartIndex]
+                      paidStatus[safePartIndex]
                         ? 'bg-emerald-600/30 border border-emerald-500/50 text-emerald-300'
                         : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-95 text-white shadow-emerald-500/25 ring-1 ring-emerald-400/40'
                     }`}
                   >
                     <CheckCircle2 className="h-6 w-6 shrink-0" />
                     <span>
-                      {paidStatus[activePartIndex]
+                      {paidStatus[safePartIndex]
                         ? isHindi
                           ? `भाग ${currentPart.partNumber} प्राप्त हो गया (Tap to Undo)`
                           : `Part ${currentPart.partNumber} Marked Paid (Tap to Undo)`

@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import confetti from 'canvas-confetti'
 import {
   Zap,
   Divide,
   SlidersHorizontal,
-  Sparkles,
   CheckCircle2,
   Copy,
   Check,
@@ -12,9 +11,6 @@ import {
   MessageSquare,
   History,
   PartyPopper,
-  ShoppingBag,
-  Utensils,
-  Fuel,
   Plus,
   Minus,
   Layers,
@@ -23,7 +19,6 @@ import {
 import Navbar from './components/Navbar'
 import SplitCard from './components/SplitCard'
 import PolicyModal from './components/PolicyModal'
-import LaunchModal from './components/LaunchModal'
 import ReceiptModal from './components/ReceiptModal'
 import FullscreenQrModal from './components/FullscreenQrModal'
 import MdrCalculator from './components/MdrCalculator'
@@ -36,14 +31,6 @@ import {
   POPULAR_UPI_HANDLES,
 } from './utils/upi'
 import { soundEffects } from './utils/sound'
-
-// Fun visual bill presets with real Lucide icons
-const BILL_PRESETS = [
-  { label: 'Grocery', amount: 2400, icon: ShoppingBag, color: 'text-emerald-400' },
-  { label: 'Dinner', amount: 3800, icon: Utensils, color: 'text-amber-400' },
-  { label: 'Fuel', amount: 2200, icon: Fuel, color: 'text-rose-400' },
-  { label: 'Shopping', amount: 4500, icon: Sparkles, color: 'text-purple-400' },
-]
 
 export default function App() {
   // App Mode: 'dukaan' (Simple frictionless store mode) | 'detailed' (Advanced mode)
@@ -65,8 +52,8 @@ export default function App() {
       }
     } catch {}
     return {
-      storeName: 'Sharma Kirana Store',
-      upiId: 'sharma@okhdfcbank',
+      storeName: '',
+      upiId: '',
       isConfigured: false,
     }
   })
@@ -82,30 +69,61 @@ export default function App() {
     }
   })
 
-  // Core Form State
-  const [amount, setAmount] = useState('3500')
+  // Core Form State (derived from URL params if present, else empty)
+  const [amount, setAmount] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      return params.get('am') || ''
+    } catch {
+      return ''
+    }
+  })
+
   const [upiId, setUpiId] = useState(() => {
     try {
+      const params = new URLSearchParams(window.location.search)
+      const urlPa = params.get('pa')
+      if (urlPa) return urlPa
       const saved = localStorage.getItem('split2k_store_profile')
       if (saved) {
         const parsed = JSON.parse(saved)
         if (parsed?.upiId) return parsed.upiId
       }
     } catch {}
-    return 'sharma@okhdfcbank'
+    return ''
   })
+
   const [payeeName, setPayeeName] = useState(() => {
     try {
+      const params = new URLSearchParams(window.location.search)
+      const urlPn = params.get('pn')
+      if (urlPn) return urlPn
       const saved = localStorage.getItem('split2k_store_profile')
       if (saved) {
         const parsed = JSON.parse(saved)
         if (parsed?.storeName) return parsed.storeName
       }
     } catch {}
-    return 'Sharma Kirana Store'
+    return ''
   })
-  const [splitMode, setSplitMode] = useState('smart') // 'smart' | 'halves' | 'custom'
-  const [customParts, setCustomParts] = useState(2)
+
+  const [splitMode, setSplitMode] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const urlMode = params.get('mode')
+      if (urlMode && ['smart', 'halves', 'custom'].includes(urlMode)) return urlMode
+    } catch {}
+    return 'smart'
+  })
+
+  const [customParts, setCustomParts] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const urlParts = params.get('parts')
+      if (urlParts && Number(urlParts) > 1) return Number(urlParts)
+    } catch {}
+    return 2
+  })
 
   // Paid state tracking
   const [paidStatus, setPaidStatus] = useState([])
@@ -121,7 +139,6 @@ export default function App() {
 
   // UI Modals
   const [isPolicyOpen, setIsPolicyOpen] = useState(false)
-  const [isLaunchOpen, setIsLaunchOpen] = useState(false)
   const [isReceiptOpen, setIsReceiptOpen] = useState(false)
   const [fullscreenQrData, setFullscreenQrData] = useState(null)
   const [copiedShare, setCopiedShare] = useState(false)
@@ -130,31 +147,11 @@ export default function App() {
   const [recentUpiIds, setRecentUpiIds] = useState(() => {
     try {
       const saved = localStorage.getItem('split2k_recent_upis')
-      return saved ? JSON.parse(saved) : ['sharma@okhdfcbank', 'shoppe@paytm']
+      return saved ? JSON.parse(saved) : []
     } catch {
-      return ['sharma@okhdfcbank', 'shoppe@paytm']
+      return []
     }
   })
-
-  // Parse URL search parameters on initial load
-  useEffect(() => {
-    try {
-      const params = new URLSearchParams(window.location.search)
-      const urlAm = params.get('am')
-      const urlPa = params.get('pa')
-      const urlPn = params.get('pn')
-      const urlMode = params.get('mode')
-      const urlParts = params.get('parts')
-
-      if (urlAm) setAmount(urlAm)
-      if (urlPa) setUpiId(urlPa)
-      if (urlPn) setPayeeName(urlPn)
-      if (urlMode && ['smart', 'halves', 'custom'].includes(urlMode)) setSplitMode(urlMode)
-      if (urlParts && Number(urlParts) > 1) setCustomParts(Number(urlParts))
-    } catch (e) {
-      console.warn('URL parsing error:', e)
-    }
-  }, [])
 
   // Calculate splits automatically
   const splits = useMemo(() => {
@@ -162,26 +159,18 @@ export default function App() {
     return calculateSplits(num, splitMode, customParts)
   }, [amount, splitMode, customParts])
 
-  // Synchronize paid status array with splits and reset on bill amount changes
-  useEffect(() => {
-    setPaidStatus(new Array(splits.length).fill(false))
-  }, [amount, splitMode, customParts, splits.length])
-
-  // Save UPI ID to recent storage when valid
-  useEffect(() => {
-    if (isValidUpiId(upiId)) {
-      setRecentUpiIds((prev) => {
-        const filtered = prev.filter((id) => id.toLowerCase() !== upiId.toLowerCase())
-        const updated = [upiId.trim(), ...filtered].slice(0, 5)
-        try {
-          localStorage.setItem('split2k_recent_upis', JSON.stringify(updated))
-        } catch {
-          // ignore storage quota error
-        }
-        return updated
-      })
-    }
-  }, [upiId])
+  // Save UPI ID to recent storage helper
+  const saveRecentUpi = (id) => {
+    if (!isValidUpiId(id)) return
+    setRecentUpiIds((prev) => {
+      const filtered = prev.filter((item) => item.toLowerCase() !== id.toLowerCase())
+      const updated = [id.trim(), ...filtered].slice(0, 5)
+      try {
+        localStorage.setItem('split2k_recent_upis', JSON.stringify(updated))
+      } catch {}
+      return updated
+    })
+  }
 
   // Toggle Sound handler
   const handleToggleSound = () => {
@@ -195,6 +184,24 @@ export default function App() {
       }
       return next
     })
+  }
+
+  // Synchronous amount & split modifications that reset paidStatus
+  const handleAmountChange = (newAmount) => {
+    setAmount(newAmount)
+    setPaidStatus([])
+  }
+
+  const handleSplitModeChange = (newMode) => {
+    soundEffects.pop(isMuted)
+    setSplitMode(newMode)
+    setPaidStatus([])
+  }
+
+  const handleCustomPartsChange = (updater) => {
+    soundEffects.pop(isMuted)
+    setCustomParts(updater)
+    setPaidStatus([])
   }
 
   // Toggle paid status for an item
@@ -213,7 +220,7 @@ export default function App() {
         }
 
         // Check if all are now paid
-        const allPaidNow = updated.every(Boolean) && updated.length > 0
+        const allPaidNow = splits.length > 0 && splits.every((_, idx) => updated[idx])
         if (allPaidNow) {
           soundEffects.fanfare(isMuted)
           confetti({
@@ -228,33 +235,30 @@ export default function App() {
     })
   }
 
-  // Preset Handlers
-  const handleSelectPreset = (val) => {
-    soundEffects.pop(isMuted)
-    setAmount(String(val))
-  }
-
   const handleAddAmount = (addValue) => {
     soundEffects.pop(isMuted)
     const current = Number(amount) || 0
-    setAmount(String(current + addValue))
+    handleAmountChange(String(current + addValue))
   }
 
   const handleSetAmount = (val) => {
     soundEffects.pop(isMuted)
-    setAmount(String(val))
+    handleAmountChange(String(val))
   }
 
   const handleSelectHandle = (handle) => {
     soundEffects.pop(isMuted)
+    let newUpi = ''
     if (!upiId) {
-      setUpiId(`user${handle}`)
+      newUpi = `user${handle}`
     } else if (upiId.includes('@')) {
       const prefix = upiId.split('@')[0]
-      setUpiId(`${prefix}${handle}`)
+      newUpi = `${prefix}${handle}`
     } else {
-      setUpiId(`${upiId}${handle}`)
+      newUpi = `${upiId}${handle}`
     }
+    setUpiId(newUpi)
+    saveRecentUpi(newUpi)
   }
 
   // Share URL Generator
@@ -332,7 +336,7 @@ export default function App() {
   // Reset bill for next customer
   const handleResetBill = () => {
     setAmount('')
-    setPaidStatus(new Array(splits.length).fill(false))
+    setPaidStatus([])
   }
 
   return (
@@ -342,10 +346,6 @@ export default function App() {
         onOpenPolicy={() => {
           soundEffects.pop(isMuted)
           setIsPolicyOpen(true)
-        }}
-        onOpenLaunch={() => {
-          soundEffects.pop(isMuted)
-          setIsLaunchOpen(true)
         }}
         onOpenReceipt={() => {
           soundEffects.pop(isMuted)
@@ -362,7 +362,7 @@ export default function App() {
         {appMode === 'dukaan' ? (
           <DukaanMode
             amount={amount}
-            setAmount={setAmount}
+            setAmount={handleAmountChange}
             storeProfile={storeProfile}
             onOpenStoreSetup={() => {
               soundEffects.pop(isMuted)
@@ -413,33 +413,8 @@ export default function App() {
 
         {/* Amount & UPI Input Card */}
         <section className="rounded-3xl border border-white/10 bg-[#121826]/90 p-5 sm:p-6 shadow-2xl backdrop-blur-xl space-y-4">
-          
-          {/* Fun Bill Presets */}
-          <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 block mb-2">
-              Quick Expense Presets
-            </span>
-            <div className="grid grid-cols-4 gap-2">
-              {BILL_PRESETS.map((preset) => {
-                const IconComponent = preset.icon
-                return (
-                  <button
-                    key={preset.label}
-                    type="button"
-                    onClick={() => handleSelectPreset(preset.amount)}
-                    className="flex flex-col items-center justify-center rounded-xl border border-white/5 bg-white/5 py-2.5 px-2 text-center transition hover:bg-white/10 active:scale-95"
-                  >
-                    <IconComponent className={`h-4 w-4 ${preset.color} mb-1`} />
-                    <span className="text-[11px] font-semibold text-gray-200">{preset.label}</span>
-                    <span className="text-[10px] text-gray-400">{formatINR(preset.amount)}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
           {/* Bill Amount Input */}
-          <div className="pt-1">
+          <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
                 Bill Amount (₹)
@@ -457,7 +432,7 @@ export default function App() {
               <input
                 type="number"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => handleAmountChange(e.target.value)}
                 placeholder="0"
                 className="w-full rounded-2xl border border-white/10 bg-black/40 py-3.5 pl-10 pr-4 text-3xl font-extrabold text-white placeholder-gray-600 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
               />
@@ -527,6 +502,7 @@ export default function App() {
               type="text"
               value={upiId}
               onChange={(e) => setUpiId(e.target.value)}
+              onBlur={() => saveRecentUpi(upiId)}
               placeholder="e.g. storename@okhdfcbank or 9876543210@paytm"
               className="w-full rounded-2xl border border-white/10 bg-black/40 py-3 px-4 text-sm text-white placeholder-gray-600 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 font-mono"
             />
@@ -577,7 +553,7 @@ export default function App() {
               type="text"
               value={payeeName}
               onChange={(e) => setPayeeName(e.target.value)}
-              placeholder="e.g. Sharma Kirana Store"
+              placeholder="e.g. Verma General Store"
               className="w-full rounded-xl border border-white/10 bg-black/40 py-2.5 px-3 text-xs text-white placeholder-gray-600 focus:border-emerald-500 focus:outline-none"
             />
           </div>
@@ -591,10 +567,7 @@ export default function App() {
               {/* Smart Split Button */}
               <button
                 type="button"
-                onClick={() => {
-                  soundEffects.pop(isMuted)
-                  setSplitMode('smart')
-                }}
+                onClick={() => handleSplitModeChange('smart')}
                 className={`flex flex-col items-center justify-center rounded-2xl border p-3 text-center transition active:scale-95 ${
                   splitMode === 'smart'
                     ? 'border-emerald-500/60 bg-emerald-500/15 text-white ring-1 ring-emerald-500/40 shadow-lg shadow-emerald-500/10'
@@ -609,10 +582,7 @@ export default function App() {
               {/* 50 / 50 Equal Halves */}
               <button
                 type="button"
-                onClick={() => {
-                  soundEffects.pop(isMuted)
-                  setSplitMode('halves')
-                }}
+                onClick={() => handleSplitModeChange('halves')}
                 className={`flex flex-col items-center justify-center rounded-2xl border p-3 text-center transition active:scale-95 ${
                   splitMode === 'halves'
                     ? 'border-cyan-500/60 bg-cyan-500/15 text-white ring-1 ring-cyan-500/40 shadow-lg shadow-cyan-500/10'
@@ -627,10 +597,7 @@ export default function App() {
               {/* Custom Parts */}
               <button
                 type="button"
-                onClick={() => {
-                  soundEffects.pop(isMuted)
-                  setSplitMode('custom')
-                }}
+                onClick={() => handleSplitModeChange('custom')}
                 className={`flex flex-col items-center justify-center rounded-2xl border p-3 text-center transition active:scale-95 ${
                   splitMode === 'custom'
                     ? 'border-purple-500/60 bg-purple-500/15 text-white ring-1 ring-purple-500/40 shadow-lg shadow-purple-500/10'
@@ -651,10 +618,7 @@ export default function App() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    soundEffects.pop(isMuted)
-                    setCustomParts((p) => Math.max(2, p - 1))
-                  }}
+                  onClick={() => handleCustomPartsChange((p) => Math.max(2, p - 1))}
                   className="h-8 w-8 rounded-lg bg-white/10 flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition"
                 >
                   <Minus className="h-4 w-4" />
@@ -662,10 +626,7 @@ export default function App() {
                 <span className="font-mono text-sm font-bold text-white px-2">{customParts}</span>
                 <button
                   type="button"
-                  onClick={() => {
-                    soundEffects.pop(isMuted)
-                    setCustomParts((p) => Math.min(8, p + 1))
-                  }}
+                  onClick={() => handleCustomPartsChange((p) => Math.min(8, p + 1))}
                   className="h-8 w-8 rounded-lg bg-white/10 flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition"
                 >
                   <Plus className="h-4 w-4" />
@@ -808,16 +769,6 @@ export default function App() {
             >
               Digital Receipt
             </button>
-            <span>•</span>
-            <button
-              onClick={() => {
-                soundEffects.pop(isMuted)
-                setIsLaunchOpen(true)
-              }}
-              className="hover:text-emerald-400 underline decoration-dotted"
-            >
-              Ship on X
-            </button>
           </div>
           <p className="text-[11px] text-gray-600">
             SplitPe is open client-side software. Compliant with standard NPCI UPI URI specifications. No data leaves your browser.
@@ -830,11 +781,6 @@ export default function App() {
       <PolicyModal
         isOpen={isPolicyOpen}
         onClose={() => setIsPolicyOpen(false)}
-      />
-
-      <LaunchModal
-        isOpen={isLaunchOpen}
-        onClose={() => setIsLaunchOpen(false)}
       />
 
       <ReceiptModal
@@ -856,14 +802,16 @@ export default function App() {
         payeeName={payeeName}
       />
 
-      <StoreSetupModal
-        isOpen={isStoreSetupOpen}
-        onClose={() => setIsStoreSetupOpen(false)}
-        currentStoreName={storeProfile?.storeName}
-        currentUpiId={storeProfile?.upiId}
-        onSave={handleSaveStoreProfile}
-        onTestSoundbox={handleTestSoundbox}
-      />
+      {isStoreSetupOpen && (
+        <StoreSetupModal
+          isOpen={isStoreSetupOpen}
+          onClose={() => setIsStoreSetupOpen(false)}
+          currentStoreName={storeProfile?.storeName}
+          currentUpiId={storeProfile?.upiId}
+          onSave={handleSaveStoreProfile}
+          onTestSoundbox={handleTestSoundbox}
+        />
+      )}
     </div>
   )
 }

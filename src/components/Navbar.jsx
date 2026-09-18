@@ -10,6 +10,7 @@ import {
   BookOpen,
   Share2,
   ShieldCheck,
+  Check,
 } from 'lucide-react'
 import { BrandLogoFull } from './BrandLogo'
 
@@ -20,13 +21,41 @@ export default function Navbar({
   onToggleSound,
   onOpenReceipt,
   onOpenPolicy,
-  onOpenLaunch,
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [copiedShare, setCopiedShare] = useState(false)
 
   const handleMenuAction = (actionFn) => {
     setIsMenuOpen(false)
     actionFn?.()
+  }
+
+  const handleShareApp = async () => {
+    const shareData = {
+      title: 'SplitPe — Zero-Fee UPI Splitter',
+      text: 'Split any UPI merchant bill into fee-exempt sub-₹1,999 chunks with dynamic QR codes!',
+      url: window.location.href,
+    }
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData)
+        setIsMenuOpen(false)
+      } catch {
+        // User cancelled or share failed
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(window.location.href)
+        setCopiedShare(true)
+        setTimeout(() => {
+          setCopiedShare(false)
+          setIsMenuOpen(false)
+        }, 1500)
+      } catch {
+        setIsMenuOpen(false)
+      }
+    }
   }
 
   return (
@@ -34,9 +63,9 @@ export default function Navbar({
       <div className="mx-auto flex max-w-xl items-center justify-between px-3.5 py-2.5 sm:px-4">
         
         {/* Brand & Logo */}
-        <BrandLogoFull subtitle="Smart UPI Splitter" />
+        <BrandLogoFull subtitle="Zero-MDR Splitter" />
 
-        {/* Center/Right Controls: Mode Switcher + Menu Trigger */}
+        {/* Center/Right Controls: Mode Switcher + Sound + Menu */}
         <div className="flex items-center gap-2">
           
           {/* Compact Tactile Mode Toggle */}
@@ -49,7 +78,7 @@ export default function Navbar({
                   ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/25'
                   : 'text-gray-400 hover:text-white'
               }`}
-              title="Dukaan Mode (Fast & Simple for Shopkeepers)"
+              title="Dukaan Mode (Fast & Simple for Store Owners)"
             >
               <Store className="h-3.5 w-3.5" />
               <span>Dukaan</span>
@@ -70,7 +99,7 @@ export default function Navbar({
             </button>
           </div>
 
-          {/* Quick Sound Toggle (Always 1-tap accessible) */}
+          {/* Quick Sound Toggle */}
           <button
             type="button"
             onClick={onToggleSound}
@@ -85,7 +114,7 @@ export default function Navbar({
             {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </button>
 
-          {/* Clean Menu Drawer Toggle Button */}
+          {/* Clean Menu Button */}
           <button
             type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -109,7 +138,7 @@ export default function Navbar({
           <div className="mx-auto max-w-xl space-y-2.5">
             
             <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-gray-400 px-1">
-              <span>Quick Actions & Utilities</span>
+              <span>Actions & Utilities</span>
               <span className="text-emerald-400 flex items-center gap-1 font-semibold normal-case">
                 <ShieldCheck className="h-3 w-3" />
                 <span>NPCI Verified</span>
@@ -149,18 +178,22 @@ export default function Navbar({
                 </div>
               </button>
 
-              {/* Ship on X */}
+              {/* Native App Share */}
               <button
                 type="button"
-                onClick={() => handleMenuAction(onOpenLaunch)}
+                onClick={handleShareApp}
                 className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3 text-left transition hover:bg-white/10 active:scale-98"
               >
                 <div className="rounded-lg bg-sky-500/15 p-2 text-sky-400">
-                  <Share2 className="h-4 w-4" />
+                  {copiedShare ? <Check className="h-4 w-4 text-emerald-400" /> : <Share2 className="h-4 w-4" />}
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-white">Share / Ship on X</div>
-                  <div className="text-[10px] text-gray-400">Post update & copy</div>
+                  <div className="text-xs font-bold text-white">
+                    {copiedShare ? 'Link Copied!' : 'Share SplitPe'}
+                  </div>
+                  <div className="text-[10px] text-gray-400">
+                    {copiedShare ? 'Share with anyone' : 'Send app link'}
+                  </div>
                 </div>
               </button>
 
@@ -168,7 +201,7 @@ export default function Navbar({
 
             {/* Footer Trust Indicator */}
             <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-gray-500 px-1">
-              <span>SplitPe Engine v1.1 • Bank-to-Bank Free</span>
+              <span>SplitPe • Bank-to-Bank Free</span>
               <span className="text-gray-400">Zero Consumer Tax</span>
             </div>
 

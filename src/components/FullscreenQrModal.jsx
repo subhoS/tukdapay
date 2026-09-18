@@ -1,5 +1,5 @@
 import React from 'react'
-import { X, Download, QrCode, Check, Smartphone, ShieldCheck } from 'lucide-react'
+import { X, Download, QrCode, Smartphone, ShieldCheck } from 'lucide-react'
 import { formatINR } from '../utils/upi'
 
 export default function FullscreenQrModal({ isOpen, onClose, qrDataUrl, part, upiId }) {

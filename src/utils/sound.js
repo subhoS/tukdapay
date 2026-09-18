@@ -41,7 +41,7 @@ export const soundEffects = {
 
       osc.start()
       osc.stop(ctx.currentTime + 0.06)
-    } catch (e) {
+    } catch {
       // Audio context may be restricted before user gesture
     }
   },
@@ -72,7 +72,7 @@ export const soundEffects = {
         osc.start(now + idx * 0.06)
         osc.stop(now + idx * 0.06 + 0.26)
       })
-    } catch (e) {
+    } catch {
       // Audio context restricted
     }
   },
@@ -108,7 +108,7 @@ export const soundEffects = {
         osc.start(now + t)
         osc.stop(now + t + d + 0.02)
       })
-    } catch (e) {
+    } catch {
       // Audio context restricted
     }
   },
@@ -145,7 +145,7 @@ export const soundEffects = {
         osc.start(now + start)
         osc.stop(now + start + dur + 0.02)
       })
-    } catch (e) {
+    } catch {
       // Audio context restricted
     }
   },
@@ -153,7 +153,7 @@ export const soundEffects = {
   // Paytm Soundbox-style voice announcement
   speakSoundbox({
     partNumber,
-    totalParts,
+    totalParts = 2,
     amount,
     isFull = false,
     language = 'hi',
@@ -181,13 +181,13 @@ export const soundEffects = {
         if (isFull) {
           phrase = `SplitPe par poora payment safal! Kul ${roundedAmt} rupaye prapt hue.`
         } else {
-          phrase = `Part ${partNumber} prapt hua! ${roundedAmt} rupaye SplitPe par.`
+          phrase = `Part ${partNumber} of ${totalParts} prapt hua! ${roundedAmt} rupaye SplitPe par.`
         }
       } else {
         if (isFull) {
           phrase = `Full payment complete! ${roundedAmt} rupees received on SplitPe.`
         } else {
-          phrase = `Part ${partNumber} received! ${roundedAmt} rupees on SplitPe.`
+          phrase = `Part ${partNumber} of ${totalParts} received! ${roundedAmt} rupees on SplitPe.`
         }
       }
 

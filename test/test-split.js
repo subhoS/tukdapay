@@ -11,7 +11,8 @@ assert.strictEqual(isValidUpiId('test.user_123@ybl'), true, 'VPA with dots and u
 assert.strictEqual(isValidUpiId('randomstring'), false, 'Invalid string without @ should fail')
 assert.strictEqual(isValidUpiId('user@'), false, 'Incomplete VPA should fail')
 assert.strictEqual(isValidUpiId(''), false, 'Empty VPA should fail')
-console.log('[PASS] UPI Validation tests passed')
+assert.ok(formatINR(1999).includes('1,999'), 'formatINR should format currency properly')
+console.log('[PASS] UPI Validation and Formatting tests passed')
 
 // Test 2: Smart Split logic (< 2000)
 const split3500 = calculateSplits(3500, 'smart')
