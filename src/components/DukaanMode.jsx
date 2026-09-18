@@ -1,0 +1,801 @@
+import React, { useState, useEffect, useMemo } from 'react'
+import QRCode from 'qrcode'
+import confetti from 'canvas-confetti'
+import {
+  Store,
+  QrCode,
+  CheckCircle2,
+  Volume2,
+  VolumeX,
+  ArrowRight,
+  ArrowLeft,
+  RotateCcw,
+  Edit3,
+  Receipt,
+  ShieldCheck,
+  Check,
+  Zap,
+  PartyPopper,
+  Clock,
+  Languages,
+  SlidersHorizontal,
+  Delete,
+  X,
+  Eye,
+} from 'lucide-react'
+import { generateUpiUri, formatINR, isValidUpiId } from '../utils/upi'
+import { GPayIcon, PhonePeIcon, PaytmIcon, BhimIcon } from './PaymentLogos'
+
+export default function DukaanMode({
+  amount,
+  setAmount,
+  storeProfile,
+  onOpenStoreSetup,
+  splits,
+  paidStatus,
+  onTogglePaid,
+  onResetBill,
+  isMuted,
+  onToggleSound,
+  onOpenReceipt,
+  onSwitchToDetailed,
+  dukaanLang,
+  setDukaanLang,
+  soundEffects,
+}) {
+  // Current active view in Dukaan mode: 'keypad' | 'counter'
+  const [activeView, setActiveView] = useState('keypad')
+  // Active part index being displayed in counter view
+  const [activePartIndex, setActivePartIndex] = useState(0)
+  // Generated QR Data URL for the active part
+  const [activeQrUrl, setActiveQrUrl] = useState('')
+  // Review paid parts toggle in settled view
+  const [showSettledReview, setShowSettledReview] = useState(false)
+
+  const isHindi = dukaanLang === 'hi'
+
+  // Determine current active part
+  const currentPart = splits[activePartIndex] || splits[0] || null
+
+  // Generate UPI URI for active part
+  const activeUpiUri = useMemo(() => {
+    if (!currentPart || !storeProfile?.upiId) return ''
+    return generateUpiUri({
+      pa: storeProfile.upiId,
+      pn: storeProfile.storeName || 'Merchant',
+      am: currentPart.amount,
+      tn: `Split2K: Part ${currentPart.partNumber} of ${splits.length}`,
+    })
+  }, [currentPart, storeProfile, splits.length])
+
+  // Generate QR code whenever active UPI URI changes
+  useEffect(() => {
+    if (!activeUpiUri) {
+      setActiveQrUrl('')
+      return
+    }
+
+    QRCode.toDataURL(activeUpiUri, {
+      width: 360,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#ffffff',
+      },
+      errorCorrectionLevel: 'M',
+    })
+      .then((url) => setActiveQrUrl(url))
+      .catch((err) => console.error('Dukaan QR generation error:', err))
+  }, [activeUpiUri])
+
+  // Clamp active part index if splits count shrinks
+  useEffect(() => {
+    if (activePartIndex >= splits.length && splits.length > 0) {
+      setActivePartIndex(0)
+    }
+  }, [splits.length, activePartIndex])
+
+  const paidCount = paidStatus.filter(Boolean).length
+  const isFullyPaid = splits.length > 0 && paidCount === splits.length
+
+  // When all parts are paid while in counter view, celebrate!
+  useEffect(() => {
+    if (activeView === 'counter' && isFullyPaid) {
+      confetti({
+        particleCount: 100,
+        spread: 90,
+        origin: { y: 0.55 },
+        colors: ['#10b981', '#14b8a6', '#3b82f6', '#f59e0b'],
+      })
+    }
+  }, [isFullyPaid, activeView])
+
+  // Keypad Handlers
+  const handleKeypadPress = (val) => {
+    soundEffects?.pop(isMuted)
+    if (val === 'C') {
+      setAmount('')
+      return
+    }
+
+    if (val === 'backspace') {
+      if (amount.length > 1) {
+        setAmount(amount.slice(0, -1))
+      } else {
+        setAmount('')
+      }
+      return
+    }
+
+    if (val === '00') {
+      if (amount && amount !== '0') {
+        setAmount(amount + '00')
+      }
+      return
+    }
+
+    if (amount === '0' || !amount) {
+      setAmount(val)
+    } else {
+      setAmount(amount + val)
+    }
+  }
+
+  const handleAddAmount = (addVal) => {
+    soundEffects?.pop(isMuted)
+    const current = Number(amount) || 0
+    setAmount(String(current + addVal))
+  }
+
+  const handleSetAmount = (val) => {
+    soundEffects?.pop(isMuted)
+    setAmount(String(val))
+  }
+
+  // Action to start customer counter QR view
+  const handleStartSplitAndShowQr = () => {
+    soundEffects?.pop(isMuted)
+    if (!storeProfile?.upiId || !isValidUpiId(storeProfile.upiId) || storeProfile?.isConfigured === false) {
+      onOpenStoreSetup()
+      return
+    }
+    const num = Number(amount) || 0
+    if (num <= 0) return
+
+    // Find the first unpaid part or default to 0
+    const firstUnpaid = paidStatus.findIndex((p) => !p)
+    setActivePartIndex(firstUnpaid !== -1 ? firstUnpaid : 0)
+    setShowSettledReview(false)
+    setActiveView('counter')
+  }
+
+  // Handle Mark as Paid with Soundbox Chime & Voice
+  const handleMarkCurrentPaid = () => {
+    if (!currentPart) return
+
+    const partNum = currentPart.partNumber
+    const partAmount = currentPart.amount
+    const isCurrentlyPaid = paidStatus[activePartIndex]
+
+    if (!isCurrentlyPaid) {
+      // Check if this action completes all payments
+      const willBeFullyPaid = paidCount + 1 === splits.length
+
+      // Play Soundbox Chime + Voice announcement
+      soundEffects?.speakSoundbox({
+        partNumber: partNum,
+        totalParts: splits.length,
+        amount: partAmount,
+        isFull: willBeFullyPaid,
+        language: dukaanLang,
+        isMuted: isMuted,
+      })
+
+      // Notify parent with silent option so generic chime and confetti do not clash
+      onTogglePaid(activePartIndex, { silent: true })
+
+      // If not fully paid, auto-advance to next UNPAID part (skipping already-paid parts)
+      if (!willBeFullyPaid) {
+        let nextUnpaidIndex = -1
+        for (let step = 1; step < splits.length; step++) {
+          const checkIdx = (activePartIndex + step) % splits.length
+          if (!paidStatus[checkIdx]) {
+            nextUnpaidIndex = checkIdx
+            break
+          }
+        }
+        if (nextUnpaidIndex !== -1) {
+          setTimeout(() => {
+            setActivePartIndex(nextUnpaidIndex)
+          }, 300)
+        }
+      }
+    } else {
+      // Unmarking
+      soundEffects?.pop(isMuted)
+      onTogglePaid(activePartIndex, { silent: true })
+    }
+  }
+
+  // Reset bill for next customer
+  const handleNextCustomer = () => {
+    soundEffects?.pop(isMuted)
+    onResetBill()
+    setShowSettledReview(false)
+    setActiveView('keypad')
+    setActivePartIndex(0)
+  }
+
+  const numAmount = Number(amount) || 0
+
+  return (
+    <div className="space-y-4">
+      {/* Dukaan Header Bar */}
+      <div className="rounded-2xl border border-emerald-500/25 bg-[#121826]/90 p-3.5 shadow-lg backdrop-blur-md flex items-center justify-between gap-3">
+        {/* Store Profile Identity Chip */}
+        <button
+          type="button"
+          onClick={() => {
+            soundEffects?.pop(isMuted)
+            onOpenStoreSetup()
+          }}
+          className="flex items-center gap-2.5 text-left group hover:opacity-90 transition active:scale-98"
+          title="Click to edit Store Name or UPI ID"
+        >
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            <Store className="h-5 w-5" />
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-bold text-white truncate max-w-[160px] sm:max-w-[220px]">
+                {storeProfile?.storeName || (isHindi ? 'मेरी दुकान' : 'My Dukaan')}
+              </span>
+              <Edit3 className="h-3 w-3 text-gray-400 group-hover:text-emerald-400" />
+            </div>
+            <p className="text-[11px] font-mono text-emerald-300 truncate max-w-[170px] sm:max-w-[240px]">
+              {storeProfile?.isConfigured && storeProfile?.upiId
+                ? storeProfile.upiId
+                : isHindi
+                ? 'UPI ID सेट करें (टैप करें)'
+                : 'Tap to set Store UPI ID'}
+            </p>
+          </div>
+        </button>
+
+        {/* Quick Utilities: Soundbox & Language */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {/* Soundbox Voice Chime Indicator */}
+          <button
+            type="button"
+            onClick={onToggleSound}
+            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition active:scale-95 ${
+              isMuted
+                ? 'border-white/10 bg-white/5 text-gray-400'
+                : 'border-emerald-500/30 bg-emerald-500/15 text-emerald-300 shadow-sm'
+            }`}
+            title={isMuted ? 'Turn Soundbox Audio ON' : 'Mute Soundbox Audio'}
+          >
+            {isMuted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5 text-emerald-400" />}
+            <span className="hidden sm:inline">{isMuted ? 'Muted' : 'Soundbox'}</span>
+          </button>
+
+          {/* Hindi / English Language Toggle */}
+          <button
+            type="button"
+            onClick={() => {
+              soundEffects?.pop(isMuted)
+              setDukaanLang(isHindi ? 'en' : 'hi')
+            }}
+            className="flex items-center gap-1 px-2 py-1.5 rounded-xl border border-white/10 bg-white/5 text-xs font-semibold text-gray-300 hover:bg-white/10 active:scale-95 transition"
+            title="Switch Language (English / हिंदी)"
+          >
+            <Languages className="h-3.5 w-3.5 text-emerald-400" />
+            <span>{isHindi ? 'हिंदी' : 'EN'}</span>
+          </button>
+
+          {/* Switch to Detailed Mode */}
+          <button
+            type="button"
+            onClick={() => {
+              soundEffects?.pop(isMuted)
+              onSwitchToDetailed()
+            }}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-white/10 bg-white/5 text-xs font-medium text-gray-300 hover:bg-white/10 active:scale-95 transition"
+            title="Switch to Detailed Consumer Mode"
+          >
+            <SlidersHorizontal className="h-3.5 w-3.5 text-gray-400" />
+            <span className="hidden sm:inline">Detailed</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Setup Warning Banner if store not configured or UPI ID invalid */}
+      {(!storeProfile?.isConfigured || !storeProfile?.upiId || !isValidUpiId(storeProfile.upiId)) && (
+        <div
+          onClick={() => {
+            soundEffects?.pop(isMuted)
+            onOpenStoreSetup()
+          }}
+          className="cursor-pointer rounded-2xl border border-amber-500/40 bg-amber-500/15 p-3.5 flex items-center justify-between transition hover:bg-amber-500/20 active:scale-98"
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="rounded-xl bg-amber-500/20 p-2 text-amber-400">
+              <ShieldCheck className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-amber-200">
+                {isHindi ? 'दुकान का UPI ID सेट करें (Save Once)' : 'Set Up Your Dukaan UPI ID Once'}
+              </p>
+              <p className="text-[11px] text-amber-300/80">
+                {isHindi
+                  ? 'कस्टमर के पेमेंट आपके बैंक खाते में आने के लिए अपना UPI ID सेट करें'
+                  : 'Customer payments will directly deposit to this UPI ID'}
+              </p>
+            </div>
+          </div>
+          <span className="text-xs font-bold text-amber-300 bg-amber-500/25 px-2.5 py-1 rounded-lg">
+            {isHindi ? 'सेट करें' : 'Setup Now'}
+          </span>
+        </div>
+      )}
+
+      {/* VIEW 1: Rapid Checkout Keypad */}
+      {activeView === 'keypad' && (
+        <div className="space-y-4">
+          {/* Main Amount Card */}
+          <div className="rounded-3xl border border-white/10 bg-[#121826] p-5 sm:p-6 shadow-2xl text-center space-y-4">
+            <div className="flex items-center justify-between text-xs text-gray-400 font-semibold uppercase tracking-wider">
+              <span>{isHindi ? 'ग्राहक बिल राशि' : 'Customer Bill Amount'}</span>
+              {numAmount > 2000 && (
+                <span className="text-emerald-400 flex items-center gap-1 font-bold">
+                  <Zap className="h-3.5 w-3.5" />
+                  <span>{isHindi ? 'ऑटो-स्प्लिट (< ₹2,000)' : 'Auto-Splits (< ₹2,000)'}</span>
+                </span>
+              )}
+            </div>
+
+            {/* Glowing Big Amount Display with Direct Input Option and Quick Clear */}
+            <div className="relative flex items-center justify-center py-2">
+              <span className="text-3xl sm:text-4xl font-extrabold text-emerald-400 mr-2">₹</span>
+              <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0"
+                className="w-full max-w-xs text-center text-4xl sm:text-5xl font-extrabold text-white bg-transparent border-b-2 border-emerald-500/50 pb-1 focus:border-emerald-400 focus:outline-none placeholder-gray-600"
+              />
+              {amount && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundEffects?.pop(isMuted)
+                    setAmount('')
+                  }}
+                  className="ml-2 rounded-full p-2 bg-white/10 hover:bg-white/20 text-gray-400 hover:text-white transition active:scale-90"
+                  title="Clear amount"
+                  aria-label="Clear amount"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Split Information Pill */}
+            {numAmount > 0 && (
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 text-xs text-emerald-300 font-medium">
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                <span>
+                  {splits.length === 1
+                    ? isHindi
+                      ? `${formatINR(numAmount)} का 1 भुगतान (0% MDR टैक्स)`
+                      : `Single ${formatINR(numAmount)} Payment (Zero MDR Fee)`
+                    : isHindi
+                    ? `${splits.length} आसान किस्तों में (< ₹2,000 प्रत्येक) • 0% MDR टैक्स`
+                    : `Splits into ${splits.length} parts (< ₹2,000 each) • 0% MDR Fee`}
+                </span>
+              </div>
+            )}
+
+            {/* Quick Increment Chips */}
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => handleAddAmount(100)}
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-gray-200 hover:bg-white/10 active:scale-95 transition"
+              >
+                +₹100
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAddAmount(500)}
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-gray-200 hover:bg-white/10 active:scale-95 transition"
+              >
+                +₹500
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAddAmount(1000)}
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-gray-200 hover:bg-white/10 active:scale-95 transition"
+              >
+                +₹1,000
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSetAmount(2500)}
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-white/10 active:scale-95 transition"
+              >
+                ₹2,500
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSetAmount(3500)}
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-white/10 active:scale-95 transition"
+              >
+                ₹3,500
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSetAmount(5000)}
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-white/10 active:scale-95 transition"
+              >
+                ₹5,000
+              </button>
+            </div>
+
+            {/* Tactile On-Screen Numeric Keypad for Counter Checkout */}
+            <div className="grid grid-cols-12 gap-2 max-w-sm mx-auto pt-2">
+              {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
+                <button
+                  key={digit}
+                  type="button"
+                  onClick={() => handleKeypadPress(digit)}
+                  className="col-span-4 flex items-center justify-center rounded-2xl py-3 text-xl font-bold border border-white/10 bg-white/5 text-white hover:bg-white/10 active:scale-90 transition select-none shadow-md"
+                >
+                  {digit}
+                </button>
+              ))}
+
+              {/* Bottom Function Row */}
+              <button
+                type="button"
+                onClick={() => handleKeypadPress('C')}
+                className="col-span-3 flex items-center justify-center rounded-2xl py-3 text-sm font-black border border-rose-500/30 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 active:scale-90 transition select-none shadow-md"
+                title="Clear All"
+              >
+                C
+              </button>
+              <button
+                type="button"
+                onClick={() => handleKeypadPress('0')}
+                className="col-span-3 flex items-center justify-center rounded-2xl py-3 text-xl font-bold border border-white/10 bg-white/5 text-white hover:bg-white/10 active:scale-90 transition select-none shadow-md"
+              >
+                0
+              </button>
+              <button
+                type="button"
+                onClick={() => handleKeypadPress('00')}
+                className="col-span-3 flex items-center justify-center rounded-2xl py-3 text-base font-bold border border-white/10 bg-white/5 text-white hover:bg-white/10 active:scale-90 transition select-none shadow-md"
+                title="Add 00"
+              >
+                00
+              </button>
+              <button
+                type="button"
+                onClick={() => handleKeypadPress('backspace')}
+                className="col-span-3 flex items-center justify-center rounded-2xl py-3 text-xl font-bold border border-white/10 bg-white/5 text-amber-300 hover:bg-white/10 active:scale-90 transition select-none shadow-md"
+                title="Delete last digit"
+                aria-label="Backspace"
+              >
+                <Delete className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* ONE BIG ACTION BUTTON: "Split & Show QR" */}
+          <button
+            type="button"
+            disabled={numAmount <= 0}
+            onClick={handleStartSplitAndShowQr}
+            className={`w-full flex items-center justify-between rounded-3xl p-4 sm:p-5 text-white shadow-2xl transition-all duration-300 active:scale-98 ${
+              numAmount > 0
+                ? 'bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:opacity-95 shadow-emerald-500/25 ring-1 ring-emerald-400/50 cursor-pointer'
+                : 'bg-white/10 text-gray-500 cursor-not-allowed border border-white/5'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-black/20 text-white">
+                <QrCode className="h-6 w-6" />
+              </div>
+              <div className="text-left">
+                <h3 className="text-base sm:text-lg font-extrabold tracking-tight">
+                  {isHindi ? 'स्प्लिट करें और QR दिखाएं' : 'Split & Show Customer QR'}
+                </h3>
+                <p className="text-xs text-white/80">
+                  {numAmount > 0
+                    ? splits.length === 1
+                      ? isHindi
+                        ? `${formatINR(numAmount)} का 1 भाग (0% MDR टैक्स)`
+                        : `${formatINR(numAmount)} in 1 part (Zero MDR Fee)`
+                      : isHindi
+                      ? `${formatINR(numAmount)} को ${splits.length} भागों में विभाजित किया जाएगा`
+                      : `${formatINR(numAmount)} in ${splits.length} parts under ₹2,000`
+                    : isHindi
+                    ? 'कृपया राशि दर्ज करें'
+                    : 'Enter bill amount above'}
+                </p>
+              </div>
+            </div>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white">
+              <ArrowRight className="h-5 w-5" />
+            </div>
+          </button>
+        </div>
+      )}
+
+      {/* VIEW 2: Customer Counter Display */}
+      {activeView === 'counter' && (
+        <div className="space-y-4 animate-fadeIn">
+          {/* Navigation Bar back to Keypad */}
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => {
+                soundEffects?.pop(isMuted)
+                setActiveView('keypad')
+              }}
+              className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-gray-300 hover:bg-white/10 active:scale-95 transition"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>{isHindi ? 'कीपैड पर लौटें' : 'Back to Keypad'}</span>
+            </button>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-gray-400">
+                {isHindi ? 'कुल बिल:' : 'Total Bill:'}{' '}
+                <strong className="text-white font-mono">{formatINR(amount)}</strong>
+              </span>
+
+              <button
+                type="button"
+                onClick={handleNextCustomer}
+                className="flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-medium text-gray-300 hover:bg-white/10 active:scale-95 transition"
+                title="Reset Bill for Next Customer"
+              >
+                <RotateCcw className="h-3.5 w-3.5 text-gray-400" />
+                <span>{isHindi ? 'नया बिल' : 'Reset'}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Multi-Part Step Tabs */}
+          {splits.length > 1 && (
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar sm:grid sm:grid-cols-4">
+              {splits.map((part, idx) => {
+                const isPaid = paidStatus[idx]
+                const isCurrent = activePartIndex === idx
+                return (
+                  <button
+                    key={part.partNumber}
+                    type="button"
+                    onClick={() => {
+                      soundEffects?.pop(isMuted)
+                      setActivePartIndex(idx)
+                    }}
+                    className={`shrink-0 min-w-[110px] sm:min-w-0 flex-1 rounded-2xl border p-2.5 text-center transition active:scale-95 ${
+                      isPaid
+                        ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300'
+                        : isCurrent
+                        ? 'border-emerald-400 bg-[#172138] ring-2 ring-emerald-500/40 shadow-lg text-white'
+                        : 'border-white/10 bg-white/5 text-gray-400 hover:bg-white/10'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between text-[11px] font-bold">
+                      <span>
+                        {isHindi ? `भाग ${part.partNumber}` : `Part ${part.partNumber}`}
+                      </span>
+                      {isPaid ? (
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                      ) : (
+                        <Clock className="h-3.5 w-3.5 text-amber-400" />
+                      )}
+                    </div>
+                    <div className="text-xs font-extrabold font-mono mt-0.5">
+                      {formatINR(part.amount)}
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          {/* If All Parts are Fully Paid -> Celebratory Card */}
+          {isFullyPaid && (
+            <div className="rounded-3xl border border-emerald-500/40 bg-[#121f24] p-6 sm:p-8 text-center shadow-2xl space-y-5 animate-fadeIn">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border-2 border-emerald-500/40 shadow-lg shadow-emerald-500/20">
+                <CheckCircle2 className="h-10 w-10" />
+              </div>
+
+              <div>
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300 border border-emerald-500/30 mb-2">
+                  <PartyPopper className="h-3.5 w-3.5" />
+                  <span>{isHindi ? 'भुगतान सफल' : 'Payment Complete'}</span>
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
+                  {isHindi ? 'पूरा भुगतान प्राप्त हुआ!' : 'All Payments Received!'}
+                </h3>
+                <p className="text-sm text-gray-300 mt-1">
+                  {formatINR(amount)}{' '}
+                  {splits.length === 1
+                    ? isHindi
+                      ? 'का पूरा भुगतान प्राप्त हो गया है।'
+                      : 'has been settled in full.'
+                    : isHindi
+                    ? `का भुगतान ${splits.length} भागों में पूरा हो गया है।`
+                    : `has been settled in full across ${splits.length} parts.`}
+                </p>
+              </div>
+
+              {/* Breakdown Pill */}
+              <div className="rounded-2xl border border-white/10 bg-black/30 p-3.5 text-xs text-gray-300 space-y-1.5">
+                {splits.map((p) => (
+                  <div key={p.partNumber} className="flex justify-between items-center font-mono">
+                    <span className="text-gray-400">
+                      Part {p.partNumber} ({formatINR(p.amount)}):
+                    </span>
+                    <span className="text-emerald-400 font-bold flex items-center gap-1">
+                      <Check className="h-3 w-3" /> Received
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* 1-Tap Next Customer CTA */}
+              <div className="space-y-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={handleNextCustomer}
+                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 py-4 text-base font-bold text-white shadow-xl shadow-emerald-500/25 hover:opacity-95 active:scale-95 transition"
+                >
+                  <RotateCcw className="h-5 w-5" />
+                  <span>{isHindi ? 'नया बिल / अगला ग्राहक' : 'New Bill (Next Customer)'}</span>
+                </button>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundEffects?.pop(isMuted)
+                      setShowSettledReview(!showSettledReview)
+                    }}
+                    className="flex-1 flex items-center justify-center gap-1.5 rounded-2xl border border-white/10 bg-white/5 py-3 text-xs font-semibold text-gray-300 hover:bg-white/10 active:scale-95 transition"
+                  >
+                    <Eye className="h-4 w-4 text-emerald-400" />
+                    <span>
+                      {showSettledReview
+                        ? isHindi
+                          ? 'समीक्षा बंद करें'
+                          : 'Hide Review'
+                        : isHindi
+                        ? 'QR कोड देखें'
+                        : 'Review QRs'}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      soundEffects?.pop(isMuted)
+                      onOpenReceipt()
+                    }}
+                    className="flex-1 flex items-center justify-center gap-1.5 rounded-2xl border border-white/10 bg-white/5 py-3 text-xs font-semibold text-gray-300 hover:bg-white/10 active:scale-95 transition"
+                  >
+                    <Receipt className="h-4 w-4 text-emerald-400" />
+                    <span>{isHindi ? 'रसीद देखें' : 'Receipt'}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ACTIVE QR CODE CARD FOR CUSTOMER */}
+          {(!isFullyPaid || showSettledReview) && currentPart && (
+              <div className="rounded-3xl border border-white/15 bg-[#121826] p-5 sm:p-7 shadow-2xl text-center space-y-4">
+                {/* Step Banner */}
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-400 text-black text-xs font-black">
+                      {currentPart.partNumber}
+                    </div>
+                    <div className="text-left">
+                      <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-400 block">
+                        {isHindi
+                          ? `कदम ${currentPart.partNumber} / ${splits.length}`
+                          : `Step ${currentPart.partNumber} of ${splits.length}`}
+                      </span>
+                      <span className="text-[11px] text-gray-400">
+                        {isHindi ? 'कस्टमर से कहें स्कैन करें' : 'Customer Scan & Pay'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <span className="text-xs font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 rounded-full">
+                    {formatINR(currentPart.amount)}
+                  </span>
+                </div>
+
+                {/* Big Scannable QR Code Canvas with High Contrast */}
+                <div className="rounded-3xl bg-white p-4 shadow-2xl inline-block border-4 border-emerald-500/30">
+                  {activeQrUrl ? (
+                    <img
+                      src={activeQrUrl}
+                      alt={`Scan to Pay Part ${currentPart.partNumber}`}
+                      className="h-64 w-64 sm:h-72 sm:w-72 object-contain rounded-xl"
+                    />
+                  ) : (
+                    <div className="h-64 w-64 flex items-center justify-center text-gray-500 text-xs">
+                      Generating QR...
+                    </div>
+                  )}
+                </div>
+
+                {/* Amount Callout Below QR */}
+                <div>
+                  <div className="text-3xl font-black tracking-tight text-white font-mono">
+                    {formatINR(currentPart.amount)}
+                  </div>
+                  <p className="text-xs text-gray-400 font-mono mt-0.5">
+                    {storeProfile?.storeName} • {storeProfile?.upiId}
+                  </p>
+                </div>
+
+                {/* Supported UPI Apps Bar */}
+                <div className="flex items-center justify-center gap-3 pt-1 border-t border-white/5">
+                  <span className="text-[11px] text-gray-400">
+                    {isHindi ? 'किसी भी UPI से:' : 'Pay using:'}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <GPayIcon className="h-4 w-4" />
+                    <PhonePeIcon className="h-4 w-4" />
+                    <PaytmIcon className="h-4 w-4" />
+                    <BhimIcon className="h-4 w-4" />
+                  </div>
+                </div>
+
+                {/* BIG SHOPKEEPER CONFIRMATION BUTTON WITH SOUNDBOX VOICE */}
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={handleMarkCurrentPaid}
+                    className={`w-full flex items-center justify-center gap-2.5 rounded-2xl py-4 px-4 text-base font-extrabold shadow-xl transition-all duration-200 active:scale-95 ${
+                      paidStatus[activePartIndex]
+                        ? 'bg-emerald-600/30 border border-emerald-500/50 text-emerald-300'
+                        : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-95 text-white shadow-emerald-500/25 ring-1 ring-emerald-400/40'
+                    }`}
+                  >
+                    <CheckCircle2 className="h-6 w-6 shrink-0" />
+                    <span>
+                      {paidStatus[activePartIndex]
+                        ? isHindi
+                          ? `भाग ${currentPart.partNumber} प्राप्त हो गया (Tap to Undo)`
+                          : `Part ${currentPart.partNumber} Marked Paid (Tap to Undo)`
+                        : isHindi
+                        ? `भाग ${currentPart.partNumber} प्राप्त हुआ (${formatINR(currentPart.amount)})`
+                        : `Payment ${currentPart.partNumber} Received (${formatINR(currentPart.amount)})`}
+                    </span>
+                  </button>
+                  <p className="text-[11px] text-gray-400 mt-1.5 flex items-center justify-center gap-1">
+                    <Volume2 className="h-3 w-3 text-emerald-400" />
+                    <span>
+                      {isHindi
+                        ? 'टैप करने पर साउंडबॉक्स बोलकर बताएगा'
+                        : 'Soundbox chime & voice confirmation triggers on tap'}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            )}
+        </div>
+      )}
+    </div>
+  )
+}
