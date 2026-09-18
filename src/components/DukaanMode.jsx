@@ -16,9 +16,9 @@ import {
   Check,
   Zap,
   PartyPopper,
-  Clock,
   Languages,
-  SlidersHorizontal,
+  ChevronLeft,
+  ChevronRight,
   Delete,
   X,
   Eye,
@@ -38,7 +38,6 @@ export default function DukaanMode({
   isMuted,
   onToggleSound,
   onOpenReceipt,
-  onSwitchToDetailed,
   dukaanLang,
   setDukaanLang,
   soundEffects,
@@ -286,25 +285,11 @@ export default function DukaanMode({
               soundEffects?.pop(isMuted)
               setDukaanLang(isHindi ? 'en' : 'hi')
             }}
-            className="flex items-center gap-1 px-2 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 hover:bg-slate-100 active:scale-95 transition"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 hover:bg-slate-100 active:scale-95 transition"
             title="Switch Language (English / हिंदी)"
           >
             <Languages className="h-3.5 w-3.5 text-[#00BAF2]" />
             <span>{isHindi ? 'हिंदी' : 'EN'}</span>
-          </button>
-
-          {/* Switch to Detailed Mode */}
-          <button
-            type="button"
-            onClick={() => {
-              soundEffects?.pop(isMuted)
-              onSwitchToDetailed()
-            }}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-700 hover:bg-slate-100 active:scale-95 transition"
-            title="Switch to Detailed Consumer Mode"
-          >
-            <SlidersHorizontal className="h-3.5 w-3.5 text-slate-500" />
-            <span className="hidden sm:inline">Detailed</span>
           </button>
         </div>
       </div>
@@ -535,76 +520,133 @@ export default function DukaanMode({
       {/* VIEW 2: Customer Counter Display */}
       {activeView === 'counter' && (
         <div className="space-y-4 animate-fadeIn">
-          {/* Navigation Bar back to Keypad */}
-          <div className="flex items-center justify-between">
+          {/* Counter Top Bar: Back, Bill Total & Quick Reset */}
+          <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 shadow-xs">
             <button
               type="button"
               onClick={() => {
                 soundEffects?.pop(isMuted)
                 setActiveView('keypad')
               }}
-              className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 active:scale-95 transition shadow-sm"
+              className="flex items-center gap-1.5 text-xs font-bold text-[#002970] hover:text-[#00BAF2] active:scale-95 transition"
             >
-              <ArrowLeft className="h-4 w-4 text-[#002970]" />
-              <span>{isHindi ? 'कीपैड पर लौटें' : 'Back to Keypad'}</span>
+              <ArrowLeft className="h-4 w-4" />
+              <span>{isHindi ? 'कीपैड' : 'Keypad'}</span>
             </button>
 
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-500">
-                {isHindi ? 'कुल बिल:' : 'Total Bill:'}{' '}
-                <strong className="text-[#002970] font-mono">{formatINR(amount)}</strong>
+            <div className="flex items-center gap-2.5">
+              <span className="text-xs text-slate-500 font-medium">
+                {isHindi ? 'कुल बिल:' : 'Total:'}{' '}
+                <strong className="text-[#002970] font-mono text-sm font-extrabold">{formatINR(amount)}</strong>
               </span>
 
               <button
                 type="button"
                 onClick={handleNextCustomer}
-                className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 active:scale-95 transition shadow-sm"
-                title="Reset Bill for Next Customer"
+                className="flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600 active:scale-95 transition"
+                title="Reset for Next Customer"
               >
-                <RotateCcw className="h-3.5 w-3.5 text-slate-400" />
-                <span>{isHindi ? 'नया बिल' : 'Reset'}</span>
+                <RotateCcw className="h-3 w-3 text-slate-400" />
+                <span>{isHindi ? 'नया' : 'Reset'}</span>
               </button>
             </div>
           </div>
 
-          {/* Multi-Part Step Tabs */}
+          {/* Sleek Stepper & Pagination Controller */}
           {splits.length > 1 && (
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar sm:grid sm:grid-cols-4">
-              {splits.map((part, idx) => {
-                const isPaid = paidStatus[idx]
-                const isCurrent = safePartIndex === idx
-                return (
-                  <button
-                    key={part.partNumber}
-                    type="button"
-                    onClick={() => {
-                      soundEffects?.pop(isMuted)
-                      setActivePartIndex(idx)
-                    }}
-                    className={`shrink-0 min-w-[110px] sm:min-w-0 flex-1 rounded-2xl border p-2.5 text-center transition active:scale-95 ${
-                      isPaid
-                        ? 'border-emerald-300 bg-emerald-50 text-emerald-800'
-                        : isCurrent
-                        ? 'border-[#00BAF2] bg-sky-50 ring-2 ring-[#00BAF2]/30 shadow-sm text-[#002970]'
-                        : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between text-[11px] font-bold">
-                      <span>
-                        {isHindi ? `भाग ${part.partNumber}` : `Part ${part.partNumber}`}
-                      </span>
-                      {isPaid ? (
-                        <CheckCircle2 className="h-3.5 w-3.5 text-[#00AF71]" />
-                      ) : (
-                        <Clock className="h-3.5 w-3.5 text-amber-500" />
-                      )}
-                    </div>
-                    <div className="text-xs font-extrabold font-mono mt-0.5">
-                      {formatINR(part.amount)}
-                    </div>
-                  </button>
-                )
-              })}
+            <div className="rounded-2xl border border-slate-200 bg-white p-2.5 shadow-xs space-y-2">
+              <div className="flex items-center justify-between gap-1.5 sm:gap-2">
+                
+                {/* Previous Part Button */}
+                <button
+                  type="button"
+                  disabled={safePartIndex === 0}
+                  onClick={() => {
+                    soundEffects?.pop(isMuted)
+                    setActivePartIndex(safePartIndex - 1)
+                  }}
+                  className={`flex items-center justify-center h-8 px-2 sm:px-2.5 rounded-xl border text-xs font-bold transition active:scale-95 ${
+                    safePartIndex === 0
+                      ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed'
+                      : 'border-slate-200 bg-slate-50 text-[#002970] hover:bg-slate-100 shadow-2xs'
+                  }`}
+                  title="Previous Step"
+                  aria-label="Previous Step"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline sm:ml-0.5">{isHindi ? 'पिछला' : 'Prev'}</span>
+                </button>
+
+                {/* Compact Tactile Step Pills */}
+                <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto py-0.5 px-1 no-scrollbar justify-center flex-1">
+                  {splits.map((part, idx) => {
+                    const isPaid = paidStatus[idx]
+                    const isCurrent = safePartIndex === idx
+                    return (
+                      <button
+                        key={part.partNumber}
+                        type="button"
+                        onClick={() => {
+                          soundEffects?.pop(isMuted)
+                          setActivePartIndex(idx)
+                        }}
+                        className={`shrink-0 flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-xs font-bold transition active:scale-95 ${
+                          isPaid
+                            ? 'border border-emerald-300 bg-emerald-50 text-[#00AF71]'
+                            : isCurrent
+                            ? 'border border-[#002970] bg-[#002970] text-white shadow-xs'
+                            : 'border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
+                        }`}
+                        title={`Part ${part.partNumber}: ${formatINR(part.amount)}`}
+                      >
+                        {isPaid ? (
+                          <CheckCircle2 className="h-3.5 w-3.5 text-[#00AF71]" />
+                        ) : (
+                          <span
+                            className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] font-black ${
+                              isCurrent ? 'bg-[#00BAF2] text-white' : 'bg-slate-200 text-slate-700'
+                            }`}
+                          >
+                            {part.partNumber}
+                          </span>
+                        )}
+                        <span className="font-mono">{formatINR(part.amount)}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Next Part Button */}
+                <button
+                  type="button"
+                  disabled={safePartIndex === splits.length - 1}
+                  onClick={() => {
+                    soundEffects?.pop(isMuted)
+                    setActivePartIndex(safePartIndex + 1)
+                  }}
+                  className={`flex items-center justify-center h-8 px-2 sm:px-2.5 rounded-xl border text-xs font-bold transition active:scale-95 ${
+                    safePartIndex === splits.length - 1
+                      ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed'
+                      : 'border-slate-200 bg-slate-50 text-[#002970] hover:bg-slate-100 shadow-2xs'
+                  }`}
+                  title="Next Step"
+                  aria-label="Next Step"
+                >
+                  <span className="hidden sm:inline sm:mr-0.5">{isHindi ? 'अगला' : 'Next'}</span>
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+
+              </div>
+
+              {/* Thin Progress Track */}
+              <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-[#00BAF2] to-[#00AF71] transition-all duration-300"
+                  style={{
+                    width: `${((paidStatus.filter(Boolean).length) / splits.length) * 100}%`,
+                  }}
+                />
+              </div>
             </div>
           )}
 
@@ -700,26 +742,20 @@ export default function DukaanMode({
           {/* ACTIVE QR CODE CARD FOR CUSTOMER */}
           {(!isFullyPaid || showSettledReview) && currentPart && (
             <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-7 shadow-sm text-center space-y-4">
-              {/* Step Banner */}
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#002970] text-white text-xs font-black">
-                    {currentPart.partNumber}
-                  </div>
-                  <div className="text-left">
-                    <span className="text-xs font-extrabold uppercase tracking-wider text-[#002970] block">
-                      {isHindi
-                        ? `कदम ${currentPart.partNumber} / ${splits.length}`
-                        : `Step ${currentPart.partNumber} of ${splits.length}`}
-                    </span>
-                    <span className="text-[11px] text-slate-500">
-                      {isHindi ? 'कस्टमर से कहें स्कैन करें' : 'Customer Scan & Pay'}
-                    </span>
-                  </div>
-                </div>
-
-                <span className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
-                  {formatINR(currentPart.amount)}
+              {/* Clean Part Header */}
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 text-xs">
+                <span className="font-extrabold uppercase tracking-wider text-[#002970]">
+                  {splits.length > 1
+                    ? isHindi
+                      ? `कस्टमर QR — भाग ${currentPart.partNumber} / ${splits.length}`
+                      : `Customer QR — Part ${currentPart.partNumber} of ${splits.length}`
+                    : isHindi
+                    ? 'कस्टमर QR कोड'
+                    : 'Customer QR Code'}
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-800 border border-emerald-200">
+                  <Zap className="h-3 w-3 text-[#00AF71]" />
+                  <span>≤ ₹1,999 Zero-MDR</span>
                 </span>
               </div>
 

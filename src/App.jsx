@@ -17,6 +17,8 @@ import {
   GitFork,
   Star,
   Code2,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 
 import Navbar from './components/Navbar'
@@ -146,6 +148,7 @@ export default function App() {
   const [isReceiptOpen, setIsReceiptOpen] = useState(false)
   const [fullscreenQrData, setFullscreenQrData] = useState(null)
   const [copiedShare, setCopiedShare] = useState(false)
+  const [splitFilter, setSplitFilter] = useState('all')
 
   // Recent UPI IDs in local storage
   const [recentUpiIds, setRecentUpiIds] = useState(() => {
@@ -194,18 +197,21 @@ export default function App() {
   const handleAmountChange = (newAmount) => {
     setAmount(newAmount)
     setPaidStatus([])
+    setSplitFilter('all')
   }
 
   const handleSplitModeChange = (newMode) => {
     soundEffects.pop(isMuted)
     setSplitMode(newMode)
     setPaidStatus([])
+    setSplitFilter('all')
   }
 
   const handleCustomPartsChange = (updater) => {
     soundEffects.pop(isMuted)
     setCustomParts(updater)
     setPaidStatus([])
+    setSplitFilter('all')
   }
 
   // Toggle paid status for an item
@@ -383,7 +389,6 @@ export default function App() {
               soundEffects.pop(isMuted)
               setIsReceiptOpen(true)
             }}
-            onSwitchToDetailed={() => handleToggleAppMode('detailed')}
             dukaanLang={dukaanLang}
             setDukaanLang={handleSetDukaanLang}
             soundEffects={soundEffects}
@@ -664,26 +669,34 @@ export default function App() {
                 </div>
 
                 {/* Segmented Visualizer */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 no-scrollbar">
                   {splits.map((p, idx) => {
                     const paid = paidStatus[idx]
                     return (
-                      <div
+                      <button
                         key={p.partNumber}
-                        className={`rounded-xl border py-2 px-2.5 text-center transition-all duration-300 ${
+                        type="button"
+                        onClick={() => {
+                          soundEffects.pop(isMuted)
+                          setSplitFilter(idx)
+                        }}
+                        className={`shrink-0 flex-1 min-w-[80px] rounded-xl border py-1.5 px-2 text-center transition-all duration-300 active:scale-95 ${
                           paid
                             ? 'border-emerald-300 bg-emerald-50 text-emerald-800'
-                            : 'border-slate-200 bg-slate-50 text-slate-600'
+                            : splitFilter === idx
+                            ? 'border-[#002970] bg-sky-50 text-[#002970] ring-1 ring-[#002970]'
+                            : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
                         }`}
+                        title={`Click to focus Part ${p.partNumber}`}
                       >
                         <div className="flex items-center justify-between text-[10px] font-semibold">
                           <span>Part {p.partNumber}</span>
-                          {paid ? <CheckCircle2 className="h-3 w-3 text-emerald-600" /> : <span className="text-amber-600">Due</span>}
+                          {paid ? <CheckCircle2 className="h-3 w-3 text-[#00AF71]" /> : <span className="text-amber-600">Due</span>}
                         </div>
                         <div className={`text-xs font-bold font-mono mt-0.5 ${paid ? 'text-emerald-900' : 'text-[#002970]'}`}>
                           {formatINR(p.amount)}
                         </div>
-                      </div>
+                      </button>
                     )
                   })}
                 </div>
@@ -705,12 +718,16 @@ export default function App() {
               </section>
             )}
 
-            {/* Split Payments List */}
+            {/* Split Payments List with Sleek Pagination Filter */}
             <section className="space-y-3">
               <div className="flex items-center justify-between">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                   <Layers className="h-3.5 w-3.5 text-[#00BAF2]" />
-                  <span>Split QR Codes & Direct Links ({splits.length} Parts)</span>
+                  <span>
+                    {splitFilter === 'all'
+                      ? `Split QR Codes (${splits.length} Parts)`
+                      : `Part ${splits[splitFilter]?.partNumber || 1} of ${splits.length}`}
+                  </span>
                 </h2>
                 
                 <div className="flex items-center gap-2">
@@ -732,22 +749,103 @@ export default function App() {
                 </div>
               </div>
 
-              {splits.map((part, index) => (
-                <SplitCard
-                  key={part.partNumber}
-                  part={part}
-                  index={index}
-                  totalParts={splits.length}
-                  upiId={upiId}
-                  payeeName={payeeName}
-                  isPaid={paidStatus[index] || false}
-                  onTogglePaid={handleTogglePaid}
-                  activeStep={paidStatus.findIndex((p) => !p)}
-                  onFullscreenQr={(url, p) => setFullscreenQrData({ url, part: p })}
-                  soundEffects={soundEffects}
-                  isMuted={isMuted}
-                />
-              ))}
+              {/* Clean Stepper / Pagination Filter when > 2 parts */}
+              {splits.length > 2 && (
+                <div className="flex items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xs">
+                  <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        soundEffects.pop(isMuted)
+                        setSplitFilter('all')
+                      }}
+                      className={`shrink-0 rounded-xl px-2.5 py-1 text-xs font-bold transition active:scale-95 ${
+                        splitFilter === 'all'
+                          ? 'bg-[#002970] text-white shadow-xs'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      All Parts ({splits.length})
+                    </button>
+                    {splits.map((part, idx) => (
+                      <button
+                        key={part.partNumber}
+                        type="button"
+                        onClick={() => {
+                          soundEffects.pop(isMuted)
+                          setSplitFilter(idx)
+                        }}
+                        className={`shrink-0 flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-bold transition active:scale-95 ${
+                          splitFilter === idx
+                            ? 'bg-[#002970] text-white shadow-xs'
+                            : paidStatus[idx]
+                            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                      >
+                        {paidStatus[idx] && <CheckCircle2 className="h-3 w-3 text-[#00AF71]" />}
+                        <span>Part {part.partNumber}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {splitFilter !== 'all' && (
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        disabled={splitFilter === 0}
+                        onClick={() => {
+                          soundEffects.pop(isMuted)
+                          setSplitFilter((prev) => Math.max(0, prev - 1))
+                        }}
+                        className={`p-1.5 rounded-lg border transition active:scale-90 ${
+                          splitFilter === 0 ? 'text-slate-300 border-slate-100 cursor-not-allowed' : 'text-[#002970] border-slate-200 hover:bg-slate-100'
+                        }`}
+                        title="Previous Part"
+                        aria-label="Previous Part"
+                      >
+                        <ChevronLeft className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={splitFilter === splits.length - 1}
+                        onClick={() => {
+                          soundEffects.pop(isMuted)
+                          setSplitFilter((prev) => Math.min(splits.length - 1, prev + 1))
+                        }}
+                        className={`p-1.5 rounded-lg border transition active:scale-90 ${
+                          splitFilter === splits.length - 1 ? 'text-slate-300 border-slate-100 cursor-not-allowed' : 'text-[#002970] border-slate-200 hover:bg-slate-100'
+                        }`}
+                        title="Next Part"
+                        aria-label="Next Part"
+                      >
+                        <ChevronRight className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Render either all SplitCards or focused SplitCard */}
+              {splits
+                .map((part, index) => ({ part, index }))
+                .filter(({ index }) => splitFilter === 'all' || splitFilter === index)
+                .map(({ part, index }) => (
+                  <SplitCard
+                    key={part.partNumber}
+                    part={part}
+                    index={index}
+                    totalParts={splits.length}
+                    upiId={upiId}
+                    payeeName={payeeName}
+                    isPaid={paidStatus[index] || false}
+                    onTogglePaid={handleTogglePaid}
+                    activeStep={paidStatus.findIndex((p) => !p)}
+                    onFullscreenQr={(url, p) => setFullscreenQrData({ url, part: p })}
+                    soundEffects={soundEffects}
+                    isMuted={isMuted}
+                  />
+                ))}
             </section>
 
             {/* Interactive MDR & Merchant Fee Comparison */}

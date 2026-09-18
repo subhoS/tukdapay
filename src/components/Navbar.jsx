@@ -68,15 +68,15 @@ export default function Navbar({
         {/* Brand & Logo */}
         <BrandLogoFull subtitle="Zero-MDR Splitter" />
 
-        {/* Center/Right Controls: Mode Switcher + Sound + Menu */}
-        <div className="flex items-center gap-2">
+        {/* Center/Right Controls: Mode Switcher + Menu */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
           
           {/* Compact Tactile Mode Toggle (Paytm Navy & Cyan) */}
-          <div className="flex items-center rounded-xl bg-slate-100 p-1 border border-slate-200">
+          <div className="flex items-center rounded-xl bg-slate-100 p-0.5 sm:p-1 border border-slate-200">
             <button
               type="button"
               onClick={() => onToggleAppMode('dukaan')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition active:scale-95 ${
+              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition active:scale-95 ${
                 appMode === 'dukaan'
                   ? 'bg-[#002970] text-white shadow-sm'
                   : 'text-slate-600 hover:text-[#002970]'
@@ -90,7 +90,7 @@ export default function Navbar({
             <button
               type="button"
               onClick={() => onToggleAppMode('detailed')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition active:scale-95 ${
+              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition active:scale-95 ${
                 appMode === 'detailed'
                   ? 'bg-[#002970] text-white shadow-sm'
                   : 'text-slate-600 hover:text-[#002970]'
@@ -102,33 +102,18 @@ export default function Navbar({
             </button>
           </div>
 
-          {/* Fork on GitHub Button */}
+          {/* Desktop-only Fork on GitHub link */}
           <a
             href="https://github.com/subhoS/tukdapay"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-2.5 py-1.5 text-xs font-bold text-[#002970] shadow-xs active:scale-95 transition"
+            className="hidden md:flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-2.5 py-1.5 text-xs font-bold text-[#002970] shadow-xs active:scale-95 transition"
             title="Fork this project on GitHub (by Subhadeep Datta)"
           >
             <GitHubIcon className="h-3.5 w-3.5 text-slate-800" />
-            <span className="hidden sm:inline">Fork</span>
+            <span>Fork</span>
             <GitFork className="h-3 w-3 text-[#00BAF2]" />
           </a>
-
-          {/* Quick Sound Toggle */}
-          <button
-            type="button"
-            onClick={onToggleSound}
-            className={`rounded-xl p-2 border transition active:scale-95 ${
-              isMuted
-                ? 'border-slate-200 bg-slate-100 text-slate-400 hover:bg-slate-200'
-                : 'border-[#00BAF2]/30 bg-[#E8F7FE] text-[#00BAF2] hover:bg-[#D3F0FC]'
-            }`}
-            title={isMuted ? 'Unmute Sound' : 'Mute Sound'}
-            aria-label="Sound Toggle"
-          >
-            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          </button>
 
           {/* Clean Menu Button */}
           <button
@@ -153,7 +138,36 @@ export default function Navbar({
         <div className="border-t border-slate-200 bg-white px-4 py-4 shadow-xl animate-fadeIn">
           <div className="mx-auto max-w-xl space-y-2.5">
             
-            <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-400 px-1">
+            {/* Soundbox Voice & Chime Toggle Card */}
+            <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50/80 p-3">
+              <div className="flex items-center gap-2.5">
+                <div className={`rounded-lg p-2 ${isMuted ? 'bg-slate-200 text-slate-500' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'}`}>
+                  {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4 text-emerald-700" />}
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-[#002970]">
+                    Soundbox Audio {isMuted ? '(Muted)' : '(Active)'}
+                  </div>
+                  <div className="text-[10px] text-slate-500">
+                    {isMuted ? 'Voice announcements and chimes turned off' : 'Paytm-style voice & chime confirmations active'}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={onToggleSound}
+                className={`flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-bold transition active:scale-95 ${
+                  isMuted
+                    ? 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-100'
+                    : 'bg-[#00AF71] text-white shadow-xs'
+                }`}
+              >
+                {isMuted ? 'Unmute' : 'Mute'}
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-400 px-1 pt-1">
               <span>Actions & Utilities</span>
               <span className="text-emerald-600 flex items-center gap-1 font-semibold normal-case bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                 <ShieldCheck className="h-3 w-3 text-emerald-600" />
