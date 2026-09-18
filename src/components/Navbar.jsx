@@ -11,7 +11,6 @@ import {
   Share2,
   ShieldCheck,
   Check,
-  GitFork,
   ExternalLink,
 } from 'lucide-react'
 import { BrandLogoFull } from './BrandLogo'
@@ -101,19 +100,6 @@ export default function Navbar({
               <span>Detailed</span>
             </button>
           </div>
-
-          {/* Desktop-only Fork on GitHub link */}
-          <a
-            href="https://github.com/subhoS/tukdapay"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden md:flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-2.5 py-1.5 text-xs font-bold text-[#002970] shadow-xs active:scale-95 transition"
-            title="Fork this project on GitHub (by Subhadeep Datta)"
-          >
-            <GitHubIcon className="h-3.5 w-3.5 text-slate-800" />
-            <span>Fork</span>
-            <GitFork className="h-3 w-3 text-[#00BAF2]" />
-          </a>
 
           {/* Clean Menu Button */}
           <button
@@ -229,40 +215,27 @@ export default function Navbar({
 
             </div>
 
-            {/* Open Source / Fork CTA Banner */}
+            {/* Clean Open Source Repository Link */}
             <a
               href="https://github.com/subhoS/tukdapay"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between rounded-xl border border-sky-200 bg-sky-50/70 p-3 transition hover:bg-sky-100/80 active:scale-98"
+              className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 transition hover:bg-slate-100 active:scale-98"
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="rounded-lg bg-white p-2 text-[#002970] shadow-xs border border-sky-100">
-                  <GitHubIcon className="h-4 w-4 text-[#002970]" />
-                </div>
-                <div className="min-w-0">
-                  <div className="text-xs font-bold text-[#002970] flex items-center gap-1">
-                    <span>Fork this Project on GitHub</span>
-                    <ExternalLink className="h-3 w-3 text-[#00BAF2]" />
-                  </div>
-                  <div className="text-[10px] text-slate-500 truncate">
-                    Created by Subhadeep Datta (@subhoS) • 100% Free & Open Source
-                  </div>
-                </div>
+                <GitHubIcon className="h-4 w-4 text-slate-700 shrink-0" />
+                <span className="text-xs font-semibold text-slate-700">Open Source on GitHub</span>
               </div>
-              <span className="shrink-0 flex items-center gap-1 rounded-lg bg-[#002970] text-white px-2.5 py-1 text-[11px] font-bold shadow-xs">
-                <GitFork className="h-3 w-3 text-[#00BAF2]" />
-                <span>Fork</span>
+              <span className="text-[11px] text-slate-400 flex items-center gap-1 font-mono">
+                <span>subhoS/tukdapay</span>
+                <ExternalLink className="h-3 w-3 text-slate-400" />
               </span>
             </a>
 
-            {/* Footer Trust Indicator */}
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 px-1">
-              <span>TukdaPay by <a href="https://github.com/subhoS" target="_blank" rel="noopener noreferrer" className="font-bold text-[#002970] hover:text-[#00BAF2] underline decoration-dotted">Subhadeep Datta</a></span>
-              <a href="https://github.com/subhoS/tukdapay" target="_blank" rel="noopener noreferrer" className="text-slate-600 font-semibold hover:text-[#00BAF2] flex items-center gap-1">
-                <GitFork className="h-3 w-3 text-[#00BAF2]" />
-                <span>Fork Project</span>
-              </a>
+            {/* Footer Attribution */}
+            <div className="pt-1.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 px-1">
+              <span>Created by <a href="https://github.com/subhoS" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#002970] hover:text-[#00BAF2] underline">Subhadeep Datta</a></span>
+              <span>MIT Open Source</span>
             </div>
 
           </div>
