@@ -10,6 +10,7 @@
 [![NPCI UPI Protocol](https://img.shields.io/badge/NPCI-UPI%20Standard-00AF71?style=for-the-badge)](https://www.npci.org.in/)
 [![Zero Emojis](https://img.shields.io/badge/Design-Zero%20Emojis-002970?style=for-the-badge)](https://lucide.dev/)
 [![100% Client-Side](https://img.shields.io/badge/Architecture-100%25%20Client--Side-00BAF2?style=for-the-badge)](/)
+[![Live Production](https://img.shields.io/badge/Live%20App-tukdapay.vercel.app-00AF71?style=for-the-badge&logo=vercel&logoColor=white)](https://tukdapay.vercel.app)
 
 ---
 
