@@ -10,6 +10,7 @@ import {
   Maximize2,
   Zap,
   CheckCircle2,
+  AlertCircle,
 } from 'lucide-react'
 import { generateUpiUri, formatINR } from '../utils/upi'
 import { GPayIcon, PhonePeIcon, PaytmIcon, BhimIcon } from './PaymentLogos'
@@ -134,11 +135,16 @@ export default function SplitCard({
             </div>
           </div>
 
-          {/* Under 2K Safety Chip with Lucide Zap */}
-          {part.isUnder2000 && (
+          {/* Zero-fee safety badge: <= 1999 is strictly zero fee; >= 2000 is chargeable tier */}
+          {part.amount <= 1999 ? (
             <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-300 border border-emerald-500/20">
               <Zap className="h-3 w-3 text-emerald-400" />
-              <span>Under ₹2k Tier</span>
+              <span>≤ ₹1,999 Zero-Fee</span>
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 rounded-lg bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-300 border border-amber-500/20" title="Amounts of ₹2,000 and above are subject to MDR">
+              <AlertCircle className="h-3 w-3 text-amber-400" />
+              <span>≥ ₹2,000 Tier</span>
             </span>
           )}
         </div>

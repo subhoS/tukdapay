@@ -444,10 +444,10 @@ export default function App() {
               <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
                 Bill Amount (₹)
               </label>
-              {Number(amount) > 2000 && (
+              {Number(amount) >= 2000 && (
                 <span className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
                   <Zap className="h-3 w-3" />
-                  <span>Auto-Splits &lt; ₹2,000</span>
+                  <span>Auto-Splits ≤ ₹1,999</span>
                 </span>
               )}
             </div>

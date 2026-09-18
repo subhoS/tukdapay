@@ -346,10 +346,10 @@ export default function DukaanMode({
           <div className="rounded-3xl border border-white/10 bg-[#121826] p-5 sm:p-6 shadow-2xl text-center space-y-4">
             <div className="flex items-center justify-between text-xs text-gray-400 font-semibold uppercase tracking-wider">
               <span>{isHindi ? 'ग्राहक बिल राशि' : 'Customer Bill Amount'}</span>
-              {numAmount > 2000 && (
+              {numAmount >= 2000 && (
                 <span className="text-emerald-400 flex items-center gap-1 font-bold">
                   <Zap className="h-3.5 w-3.5" />
-                  <span>{isHindi ? 'ऑटो-स्प्लिट (< ₹2,000)' : 'Auto-Splits (< ₹2,000)'}</span>
+                  <span>{isHindi ? 'ऑटो-स्प्लिट (≤ ₹1,999)' : 'Auto-Splits (≤ ₹1,999)'}</span>
                 </span>
               )}
             </div>
@@ -517,8 +517,8 @@ export default function DukaanMode({
                         ? `${formatINR(numAmount)} का 1 भाग (0% MDR टैक्स)`
                         : `${formatINR(numAmount)} in 1 part (Zero MDR Fee)`
                       : isHindi
-                      ? `${formatINR(numAmount)} को ${splits.length} भागों में विभाजित किया जाएगा`
-                      : `${formatINR(numAmount)} in ${splits.length} parts under ₹2,000`
+                      ? `${formatINR(numAmount)} को ${splits.length} भागों में (प्रत्येक ≤ ₹1,999)`
+                      : `${formatINR(numAmount)} in ${splits.length} parts (≤ ₹1,999 each)`
                     : isHindi
                     ? 'कृपया राशि दर्ज करें'
                     : 'Enter bill amount above'}

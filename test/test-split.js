@@ -1,5 +1,5 @@
 import assert from 'node:assert'
-import { calculateSplits, isValidUpiId, generateUpiUri, formatINR } from '../src/utils/upi.js'
+import { calculateSplits, isValidUpiId, generateUpiUri, formatINR, SAFE_FEE_FREE_LIMIT } from '../src/utils/upi.js'
 import { soundEffects } from '../src/utils/sound.js'
 
 console.log('[TEST] Starting SplitPe Unit Tests...')
@@ -27,17 +27,41 @@ const sum5000 = split5000.reduce((s, p) => s + p.amount, 0)
 assert.strictEqual(Number(sum5000.toFixed(2)), 5000, 'Sum of parts must match total exactly')
 split5000.forEach(p => assert(p.amount < 2000, 'Every part must be < 2000'))
 
-// Test 3: Edge cases (<= 2000, 0, decimals, large values)
-const split1500 = calculateSplits(1500, 'smart')
-assert.strictEqual(split1500.length, 1, '1500 should be 1 part')
-assert.strictEqual(split1500[0].amount, 1500)
+// Test 3: Edge cases (1999 zero fee vs 2000 chargeable, 0, decimals, large values)
+assert.strictEqual(SAFE_FEE_FREE_LIMIT, 1999, 'Safe limit must be 1999')
 
+const split1999 = calculateSplits(1999, 'smart')
+assert.strictEqual(split1999.length, 1, '1999 should be 1 part (fee-exempt)')
+assert.strictEqual(split1999[0].amount, 1999)
+assert.strictEqual(split1999[0].isZeroFee, true)
+
+// 2000 is chargeable, so it must be split into 2 parts <= 1999
 const split2000 = calculateSplits(2000, 'smart')
-assert.strictEqual(split2000.length, 1, '2000 should be 1 part')
+assert.strictEqual(split2000.length, 2, '2000 must auto-split into 2 parts to avoid fee')
+assert.strictEqual(split2000[0].amount, 1000)
+assert.strictEqual(split2000[1].amount, 1000)
+assert.strictEqual(split2000[0].isZeroFee, true)
+assert.strictEqual(split2000[1].isZeroFee, true)
 
 const split2001 = calculateSplits(2001, 'smart')
 assert.strictEqual(split2001.length, 2, '2001 should auto-split into 2 parts')
-assert(split2001[0].amount < 2000 && split2001[1].amount < 2000)
+assert(split2001[0].amount <= 1999 && split2001[1].amount <= 1999)
+
+// 3998 = 1999 * 2 (exactly 2 parts of 1999)
+const split3998 = calculateSplits(3998, 'smart')
+assert.strictEqual(split3998.length, 2, '3998 should be 2 parts of 1999')
+assert.strictEqual(split3998[0].amount, 1999)
+assert.strictEqual(split3998[1].amount, 1999)
+
+// 3999 must auto-split into 3 parts
+const split3999 = calculateSplits(3999, 'smart')
+assert.strictEqual(split3999.length, 3, '3999 must split into 3 parts so each is <= 1999')
+split3999.forEach(p => assert(p.amount <= 1999, 'Part must be <= 1999'))
+
+// 4000 must auto-split into 3 parts
+const split4000 = calculateSplits(4000, 'smart')
+assert.strictEqual(split4000.length, 3, '4000 must split into 3 parts')
+split4000.forEach(p => assert(p.amount <= 1999, 'Part must be <= 1999'))
 
 const splitZero = calculateSplits(0, 'smart')
 assert.strictEqual(splitZero.length, 0, '0 amount should return empty array')

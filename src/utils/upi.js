@@ -54,6 +54,13 @@ export function formatINR(amount) {
 }
 
 /**
+ * Threshold Limit:
+ * Transactions of ₹2,000 and above are subject to the MDR/interchange framework.
+ * Transactions of ₹1,999 or less are guaranteed strictly zero-fee.
+ */
+export const SAFE_FEE_FREE_LIMIT = 1999
+
+/**
  * Calculate optimal split breakdown
  * @param {number} totalAmount
  * @param {'smart'|'halves'|'custom'} mode
@@ -66,11 +73,11 @@ export function calculateSplits(totalAmount, mode = 'smart', customParts = 2) {
   let partsCount = 2
 
   if (mode === 'smart') {
-    if (amount <= 2000) {
+    if (amount <= SAFE_FEE_FREE_LIMIT) {
       partsCount = 1
     } else {
-      // Find minimal N such that amount / N < 2000 (strictly below 2000)
-      partsCount = Math.ceil((amount + 0.01) / 1999)
+      // Find minimal N such that every part is strictly <= 1999.00
+      partsCount = Math.ceil(amount / SAFE_FEE_FREE_LIMIT)
     }
   } else if (mode === 'halves') {
     partsCount = 2
@@ -89,7 +96,8 @@ export function calculateSplits(totalAmount, mode = 'smart', customParts = 2) {
       partNumber: i + 1,
       totalParts: partsCount,
       amount: partAmount,
-      isUnder2000: partAmount < 2000,
+      isZeroFee: partAmount <= SAFE_FEE_FREE_LIMIT,
+      isUnder2000: partAmount <= SAFE_FEE_FREE_LIMIT,
       note: `SplitPe: Part ${i + 1} of ${partsCount}`,
     })
   }

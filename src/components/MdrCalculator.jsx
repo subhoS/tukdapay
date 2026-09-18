@@ -14,8 +14,8 @@ export default function MdrCalculator({ amount, splitsCount }) {
 
   // Split calculation
   const partAmount = splitsCount > 0 ? numAmount / splitsCount : numAmount
-  const splitMdr = partAmount <= 2000 ? 0 : Math.min(300, partAmount * 0.004) * splitsCount
-  const splitWallet = partAmount <= 2000 ? 0 : partAmount * 0.011 * splitsCount
+  const splitMdr = partAmount <= 1999 ? 0 : Math.min(300, partAmount * 0.004) * splitsCount
+  const splitWallet = partAmount <= 1999 ? 0 : partAmount * 0.011 * splitsCount
 
   return (
     <div className="rounded-2xl border border-white/10 bg-[#121826] overflow-hidden">
@@ -40,7 +40,7 @@ export default function MdrCalculator({ amount, splitsCount }) {
 
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold text-emerald-400">
-            {numAmount > 2000 ? `Saves merchant ${formatINR(singleMdr)}` : 'Zero Fee'}
+            {numAmount >= 2000 ? `Saves merchant ${formatINR(singleMdr)}` : 'Zero Fee'}
           </span>
           {isOpen ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
         </div>
@@ -56,7 +56,7 @@ export default function MdrCalculator({ amount, splitsCount }) {
             {/* Single Payment Column */}
             <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 p-3">
               <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400">
-                Single Payment (&gt; ₹2,000)
+                Single Payment (≥ ₹2,000)
               </span>
               <div className="mt-2 space-y-1">
                 <div className="flex justify-between">
@@ -77,7 +77,7 @@ export default function MdrCalculator({ amount, splitsCount }) {
             {/* Split Payment Column */}
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
               <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
-                Split into {splitsCount} Parts (&lt; ₹2k each)
+                Split into {splitsCount} Parts (≤ ₹1,999 each)
               </span>
               <div className="mt-2 space-y-1">
                 <div className="flex justify-between">

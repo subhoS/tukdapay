@@ -68,6 +68,13 @@ export default function PolicyModal({ isOpen, onClose }) {
                   <strong className="text-white">Small Merchants are Exempt:</strong> Street vendors, neighborhood kirana shops, and small businesses registered under P2PM categories pay <strong>₹0 fee</strong>, even above ₹2,000.
                 </div>
               </div>
+
+              <div className="flex items-start gap-2">
+                <span className="text-emerald-400 font-bold">4.</span>
+                <div>
+                  <strong className="text-white">The Exact ₹2,000 Cutoff Boundary:</strong> Transactions of ₹2,000 and above are subject to MDR/interchange fees. Transactions of <strong>₹1,999 or less</strong> remain completely outside the framework. SplitPe optimizes splits so every part is strictly ≤ ₹1,999.
+                </div>
+              </div>
             </div>
           </div>
 
