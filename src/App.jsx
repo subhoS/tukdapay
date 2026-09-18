@@ -820,7 +820,7 @@ export default function App() {
             </button>
           </div>
           <p className="text-[11px] text-gray-600">
-            Split2K is open client-side software. Compliant with standard NPCI UPI URI specifications. No data leaves your browser.
+            SplitPe is open client-side software. Compliant with standard NPCI UPI URI specifications. No data leaves your browser.
           </p>
         </footer>
 

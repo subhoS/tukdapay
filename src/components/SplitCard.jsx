@@ -66,7 +66,7 @@ export default function SplitCard({
     if (!qrDataUrl) return
     const link = document.createElement('a')
     link.href = qrDataUrl
-    link.download = `split2k-part-${part.partNumber}-qr.png`
+    link.download = `splitpe-part-${part.partNumber}-qr.png`
     link.click()
   }
 

@@ -1,5 +1,5 @@
 /**
- * UPI Protocol and Utility Helpers for Split2K
+ * UPI Protocol and Utility Helpers for SplitPe
  */
 
 /**
@@ -12,13 +12,13 @@
  * @param {string} [params.cu='INR'] - Currency code
  * @returns {string} Standard UPI URI
  */
-export function generateUpiUri({ pa, pn = 'Merchant', am, tn = 'Bill Split', cu = 'INR' }) {
+export function generateUpiUri({ pa, pn = 'Merchant', am, tn = 'SplitPe Payment', cu = 'INR' }) {
   if (!pa) return ''
   const cleanPa = pa.trim()
   const cleanPn = (pn || 'Merchant').trim()
   const numAm = Number(am) || 0
   const formattedAm = numAm.toFixed(2)
-  const cleanTn = (tn || 'Split2K Payment').trim()
+  const cleanTn = (tn || 'SplitPe Payment').trim()
 
   const params = new URLSearchParams()
   params.set('pa', cleanPa)
@@ -90,7 +90,7 @@ export function calculateSplits(totalAmount, mode = 'smart', customParts = 2) {
       totalParts: partsCount,
       amount: partAmount,
       isUnder2000: partAmount < 2000,
-      note: `Split2K: Part ${i + 1} of ${partsCount}`,
+      note: `SplitPe: Part ${i + 1} of ${partsCount}`,
     })
   }
 

@@ -2,13 +2,13 @@ import React from 'react'
 import { X, Download, QrCode, Check, Smartphone, ShieldCheck } from 'lucide-react'
 import { formatINR } from '../utils/upi'
 
-export default function FullscreenQrModal({ isOpen, onClose, qrDataUrl, part, upiId, payeeName }) {
+export default function FullscreenQrModal({ isOpen, onClose, qrDataUrl, part, upiId }) {
   if (!isOpen || !qrDataUrl) return null
 
   const handleDownload = () => {
     const link = document.createElement('a')
     link.href = qrDataUrl
-    link.download = `split2k-part-${part?.partNumber || 1}-qr.png`
+    link.download = `splitpe-part-${part?.partNumber || 1}-qr.png`
     link.click()
   }
 

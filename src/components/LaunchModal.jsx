@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { X, Copy, Check, ExternalLink, Lightbulb, Share2 } from 'lucide-react'
+import { X, Copy, Check, ExternalLink, Lightbulb } from 'lucide-react'
 
 // Clean X SVG Icon
 function XLogo({ className = 'h-4 w-4' }) {
@@ -15,7 +15,7 @@ export default function LaunchModal({ isOpen, onClose }) {
 
   if (!isOpen) return null
 
-  const tweetText = `Built & Shipped today: Split2K
+  const tweetText = `Built & Shipped today: SplitPe
 
 Everyone is talking about the new ₹2,000 UPI merchant rules (0.4% MDR / wallet fees).
 

@@ -64,7 +64,7 @@ export default function DukaanMode({
       pa: storeProfile.upiId,
       pn: storeProfile.storeName || 'Merchant',
       am: currentPart.amount,
-      tn: `Split2K: Part ${currentPart.partNumber} of ${splits.length}`,
+      tn: `SplitPe: Part ${currentPart.partNumber} of ${splits.length}`,
     })
   }, [currentPart, storeProfile, splits.length])
 

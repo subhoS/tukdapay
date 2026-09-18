@@ -75,7 +75,7 @@ export default function PolicyModal({ isOpen, onClose }) {
           <div className="rounded-xl border border-white/10 bg-white/5 p-4 space-y-2">
             <h4 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-amber-300">
               <Info className="h-4 w-4" />
-              <span>Why Use Split2K? Practical Realities</span>
+              <span>Why Use SplitPe? Practical Realities</span>
             </h4>
             <ul className="list-disc list-inside space-y-1.5 text-xs text-gray-300 leading-relaxed">
               <li><strong>Avoid Informal Merchant Surcharges:</strong> Some offline shopkeepers informally ask customers to pay in two parts to avoid MDR overhead.</li>
@@ -88,7 +88,7 @@ export default function PolicyModal({ isOpen, onClose }) {
           <div className="rounded-xl border border-blue-500/20 bg-blue-500/10 p-3.5 flex items-start gap-2.5 text-xs text-blue-200">
             <Award className="h-4 w-4 shrink-0 text-blue-400 mt-0.5" />
             <p>
-              <strong>Safe & Transparent:</strong> Split2K is designed as a convenience utility for bill-splitting and dynamic QR generation. It does not alter your bank account's annual tax reporting (SFT). Use responsibly for personal and bill-sharing needs!
+              <strong>Safe & Transparent:</strong> SplitPe is designed as a convenience utility for bill-splitting and dynamic QR generation. It does not alter your bank account's annual tax reporting (SFT). Use responsibly for personal and bill-sharing needs!
             </p>
           </div>
 

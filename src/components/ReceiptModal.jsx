@@ -32,7 +32,7 @@ export default function ReceiptModal({
     .reduce((sum, p) => sum + p.amount, 0)
   const isFullyPaid = splits.length > 0 && paidCount === splits.length
 
-  const receiptText = `Split2K Digital Receipt
+  const receiptText = `SplitPe Digital Receipt
 ============================
 Merchant: ${payeeName || 'Store'} (${upiId || 'N/A'})
 Date: ${dateString}, ${timeString}
@@ -48,7 +48,7 @@ ${splits
   )
   .join('\n')}
 ============================
-Generated via Split2K (Zero Fee UPI Splitter)`
+Generated via SplitPe (Zero Fee UPI Splitter)`
 
   const handleCopy = () => {
     navigator.clipboard.writeText(receiptText)
