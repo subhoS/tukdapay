@@ -32,8 +32,8 @@ export default function Navbar({
 
   const handleShareApp = async () => {
     const shareData = {
-      title: 'SplitPe — Zero-Fee UPI Splitter',
-      text: 'Split any UPI merchant bill into fee-exempt sub-₹1,999 chunks with dynamic QR codes!',
+      title: 'TukdaPay — Zero-Fee UPI Splitter',
+      text: 'Split any UPI merchant bill into fee-exempt sub-₹2,000 chunks with instant QR codes!',
       url: window.location.href,
     }
 
@@ -59,7 +59,7 @@ export default function Navbar({
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#0b0f17]/95 backdrop-blur-xl transition-all">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur-md shadow-xs transition-all">
       <div className="mx-auto flex max-w-xl items-center justify-between px-3.5 py-2.5 sm:px-4">
         
         {/* Brand & Logo */}
@@ -68,15 +68,15 @@ export default function Navbar({
         {/* Center/Right Controls: Mode Switcher + Sound + Menu */}
         <div className="flex items-center gap-2">
           
-          {/* Compact Tactile Mode Toggle */}
-          <div className="flex items-center rounded-xl bg-white/[0.06] p-1 border border-white/10">
+          {/* Compact Tactile Mode Toggle (Paytm Navy & Cyan) */}
+          <div className="flex items-center rounded-xl bg-slate-100 p-1 border border-slate-200">
             <button
               type="button"
               onClick={() => onToggleAppMode('dukaan')}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition active:scale-95 ${
                 appMode === 'dukaan'
-                  ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/25'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-[#002970] text-white shadow-sm'
+                  : 'text-slate-600 hover:text-[#002970]'
               }`}
               title="Dukaan Mode (Fast & Simple for Store Owners)"
             >
@@ -89,8 +89,8 @@ export default function Navbar({
               onClick={() => onToggleAppMode('detailed')}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition active:scale-95 ${
                 appMode === 'detailed'
-                  ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/25'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-[#002970] text-white shadow-sm'
+                  : 'text-slate-600 hover:text-[#002970]'
               }`}
               title="Detailed Mode (Power Splitter)"
             >
@@ -105,8 +105,8 @@ export default function Navbar({
             onClick={onToggleSound}
             className={`rounded-xl p-2 border transition active:scale-95 ${
               isMuted
-                ? 'border-white/10 bg-white/5 text-gray-400 hover:text-white'
-                : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                ? 'border-slate-200 bg-slate-100 text-slate-400 hover:bg-slate-200'
+                : 'border-[#00BAF2]/30 bg-[#E8F7FE] text-[#00BAF2] hover:bg-[#D3F0FC]'
             }`}
             title={isMuted ? 'Unmute Sound' : 'Mute Sound'}
             aria-label="Sound Toggle"
@@ -120,8 +120,8 @@ export default function Navbar({
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className={`rounded-xl p-2 border transition active:scale-95 ${
               isMenuOpen
-                ? 'border-emerald-500/40 bg-emerald-500/20 text-white'
-                : 'border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white'
+                ? 'border-[#002970]/30 bg-[#002970]/10 text-[#002970]'
+                : 'border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
             title="Open Quick Menu"
             aria-label="Navigation Menu"
@@ -132,15 +132,15 @@ export default function Navbar({
         </div>
       </div>
 
-      {/* Decluttered Slide-Down Quick Menu Sheet */}
+      {/* Slide-Down Quick Menu Sheet */}
       {isMenuOpen && (
-        <div className="border-t border-white/10 bg-[#0f1523]/98 px-4 py-4 backdrop-blur-2xl animate-fadeIn">
+        <div className="border-t border-slate-200 bg-white px-4 py-4 shadow-xl animate-fadeIn">
           <div className="mx-auto max-w-xl space-y-2.5">
             
-            <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-gray-400 px-1">
+            <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-400 px-1">
               <span>Actions & Utilities</span>
-              <span className="text-emerald-400 flex items-center gap-1 font-semibold normal-case">
-                <ShieldCheck className="h-3 w-3" />
+              <span className="text-emerald-600 flex items-center gap-1 font-semibold normal-case bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                <ShieldCheck className="h-3 w-3 text-emerald-600" />
                 <span>NPCI Verified</span>
               </span>
             </div>
@@ -152,14 +152,14 @@ export default function Navbar({
               <button
                 type="button"
                 onClick={() => handleMenuAction(onOpenReceipt)}
-                className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3 text-left transition hover:bg-white/10 active:scale-98"
+                className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3 text-left transition hover:bg-slate-100 active:scale-98"
               >
-                <div className="rounded-lg bg-emerald-500/15 p-2 text-emerald-400">
+                <div className="rounded-lg bg-[#E8F7FE] p-2 text-[#00BAF2]">
                   <Receipt className="h-4 w-4" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-white">Digital Receipt</div>
-                  <div className="text-[10px] text-gray-400">View & copy slip</div>
+                  <div className="text-xs font-bold text-slate-800">Digital Receipt</div>
+                  <div className="text-[10px] text-slate-500">View & copy slip</div>
                 </div>
               </button>
 
@@ -167,14 +167,14 @@ export default function Navbar({
               <button
                 type="button"
                 onClick={() => handleMenuAction(onOpenPolicy)}
-                className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3 text-left transition hover:bg-white/10 active:scale-98"
+                className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3 text-left transition hover:bg-slate-100 active:scale-98"
               >
-                <div className="rounded-lg bg-amber-500/15 p-2 text-amber-400">
+                <div className="rounded-lg bg-amber-50 p-2 text-amber-600 border border-amber-200/60">
                   <BookOpen className="h-4 w-4" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-white">Policy Truth</div>
-                  <div className="text-[10px] text-gray-400">₹2,000 MDR facts</div>
+                  <div className="text-xs font-bold text-slate-800">Policy Truth</div>
+                  <div className="text-[10px] text-slate-500">₹2,000 MDR facts</div>
                 </div>
               </button>
 
@@ -182,16 +182,16 @@ export default function Navbar({
               <button
                 type="button"
                 onClick={handleShareApp}
-                className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3 text-left transition hover:bg-white/10 active:scale-98"
+                className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3 text-left transition hover:bg-slate-100 active:scale-98"
               >
-                <div className="rounded-lg bg-sky-500/15 p-2 text-sky-400">
-                  {copiedShare ? <Check className="h-4 w-4 text-emerald-400" /> : <Share2 className="h-4 w-4" />}
+                <div className="rounded-lg bg-sky-50 p-2 text-[#00BAF2]">
+                  {copiedShare ? <Check className="h-4 w-4 text-emerald-600" /> : <Share2 className="h-4 w-4" />}
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-white">
-                    {copiedShare ? 'Link Copied!' : 'Share SplitPe'}
+                  <div className="text-xs font-bold text-slate-800">
+                    {copiedShare ? 'Link Copied!' : 'Share TukdaPay'}
                   </div>
-                  <div className="text-[10px] text-gray-400">
+                  <div className="text-[10px] text-slate-500">
                     {copiedShare ? 'Share with anyone' : 'Send app link'}
                   </div>
                 </div>
@@ -200,9 +200,9 @@ export default function Navbar({
             </div>
 
             {/* Footer Trust Indicator */}
-            <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-gray-500 px-1">
-              <span>SplitPe • Bank-to-Bank Free</span>
-              <span className="text-gray-400">Zero Consumer Tax</span>
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 px-1">
+              <span>TukdaPay • Bank-to-Bank Free</span>
+              <span className="text-slate-600 font-medium">Zero Consumer Tax</span>
             </div>
 
           </div>

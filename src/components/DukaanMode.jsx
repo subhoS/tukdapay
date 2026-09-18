@@ -65,7 +65,7 @@ export default function DukaanMode({
       pa: storeProfile.upiId,
       pn: storeProfile.storeName || 'Merchant',
       am: currentPart.amount,
-      tn: `SplitPe: Part ${currentPart.partNumber} of ${splits.length}`,
+      tn: `TukdaPay: Part ${currentPart.partNumber} of ${splits.length}`,
     })
   }, [currentPart, storeProfile, splits.length])
 
@@ -231,7 +231,7 @@ export default function DukaanMode({
   return (
     <div className="space-y-4">
       {/* Dukaan Header Bar */}
-      <div className="rounded-2xl border border-emerald-500/25 bg-[#121826]/90 p-3.5 shadow-lg backdrop-blur-md flex items-center justify-between gap-3">
+      <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm flex items-center justify-between gap-3">
         {/* Store Profile Identity Chip */}
         <button
           type="button"
@@ -242,17 +242,17 @@ export default function DukaanMode({
           className="flex items-center gap-2.5 text-left group hover:opacity-90 transition active:scale-98"
           title="Click to edit Store Name or UPI ID"
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-[#002970] border border-sky-100">
             <Store className="h-5 w-5" />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <span className="text-sm font-bold text-white truncate max-w-[160px] sm:max-w-[220px]">
+              <span className="text-sm font-bold text-[#002970] truncate max-w-[160px] sm:max-w-[220px]">
                 {storeProfile?.storeName || (isHindi ? 'मेरी दुकान' : 'My Dukaan')}
               </span>
-              <Edit3 className="h-3 w-3 text-gray-400 group-hover:text-emerald-400" />
+              <Edit3 className="h-3 w-3 text-slate-400 group-hover:text-[#00BAF2]" />
             </div>
-            <p className="text-[11px] font-mono text-emerald-300 truncate max-w-[170px] sm:max-w-[240px]">
+            <p className="text-[11px] font-mono text-emerald-700 truncate max-w-[170px] sm:max-w-[240px]">
               {storeProfile?.isConfigured && storeProfile?.upiId
                 ? storeProfile.upiId
                 : isHindi
@@ -270,12 +270,12 @@ export default function DukaanMode({
             onClick={onToggleSound}
             className={`flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition active:scale-95 ${
               isMuted
-                ? 'border-white/10 bg-white/5 text-gray-400'
-                : 'border-emerald-500/30 bg-emerald-500/15 text-emerald-300 shadow-sm'
+                ? 'border-slate-200 bg-slate-50 text-slate-400'
+                : 'border-emerald-300 bg-emerald-50 text-emerald-700 shadow-sm'
             }`}
             title={isMuted ? 'Turn Soundbox Audio ON' : 'Mute Soundbox Audio'}
           >
-            {isMuted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5 text-emerald-400" />}
+            {isMuted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5 text-emerald-600" />}
             <span className="hidden sm:inline">{isMuted ? 'Muted' : 'Soundbox'}</span>
           </button>
 
@@ -286,10 +286,10 @@ export default function DukaanMode({
               soundEffects?.pop(isMuted)
               setDukaanLang(isHindi ? 'en' : 'hi')
             }}
-            className="flex items-center gap-1 px-2 py-1.5 rounded-xl border border-white/10 bg-white/5 text-xs font-semibold text-gray-300 hover:bg-white/10 active:scale-95 transition"
+            className="flex items-center gap-1 px-2 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 hover:bg-slate-100 active:scale-95 transition"
             title="Switch Language (English / हिंदी)"
           >
-            <Languages className="h-3.5 w-3.5 text-emerald-400" />
+            <Languages className="h-3.5 w-3.5 text-[#00BAF2]" />
             <span>{isHindi ? 'हिंदी' : 'EN'}</span>
           </button>
 
@@ -300,10 +300,10 @@ export default function DukaanMode({
               soundEffects?.pop(isMuted)
               onSwitchToDetailed()
             }}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-white/10 bg-white/5 text-xs font-medium text-gray-300 hover:bg-white/10 active:scale-95 transition"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-medium text-slate-700 hover:bg-slate-100 active:scale-95 transition"
             title="Switch to Detailed Consumer Mode"
           >
-            <SlidersHorizontal className="h-3.5 w-3.5 text-gray-400" />
+            <SlidersHorizontal className="h-3.5 w-3.5 text-slate-500" />
             <span className="hidden sm:inline">Detailed</span>
           </button>
         </div>
@@ -316,24 +316,24 @@ export default function DukaanMode({
             soundEffects?.pop(isMuted)
             onOpenStoreSetup()
           }}
-          className="cursor-pointer rounded-2xl border border-amber-500/40 bg-amber-500/15 p-3.5 flex items-center justify-between transition hover:bg-amber-500/20 active:scale-98"
+          className="cursor-pointer rounded-2xl border border-amber-300 bg-amber-50 p-3.5 flex items-center justify-between transition hover:bg-amber-100/70 active:scale-98"
         >
           <div className="flex items-center gap-2.5">
-            <div className="rounded-xl bg-amber-500/20 p-2 text-amber-400">
+            <div className="rounded-xl bg-amber-100 p-2 text-amber-700">
               <ShieldCheck className="h-4 w-4" />
             </div>
             <div>
-              <p className="text-xs font-bold text-amber-200">
+              <p className="text-xs font-bold text-amber-900">
                 {isHindi ? 'दुकान का UPI ID सेट करें (Save Once)' : 'Set Up Your Dukaan UPI ID Once'}
               </p>
-              <p className="text-[11px] text-amber-300/80">
+              <p className="text-[11px] text-amber-800">
                 {isHindi
                   ? 'कस्टमर के पेमेंट आपके बैंक खाते में आने के लिए अपना UPI ID सेट करें'
                   : 'Customer payments will directly deposit to this UPI ID'}
               </p>
             </div>
           </div>
-          <span className="text-xs font-bold text-amber-300 bg-amber-500/25 px-2.5 py-1 rounded-lg">
+          <span className="text-xs font-bold text-amber-900 bg-amber-200/80 px-2.5 py-1 rounded-lg">
             {isHindi ? 'सेट करें' : 'Setup Now'}
           </span>
         </div>
@@ -343,11 +343,11 @@ export default function DukaanMode({
       {activeView === 'keypad' && (
         <div className="space-y-4">
           {/* Main Amount Card */}
-          <div className="rounded-3xl border border-white/10 bg-[#121826] p-5 sm:p-6 shadow-2xl text-center space-y-4">
-            <div className="flex items-center justify-between text-xs text-gray-400 font-semibold uppercase tracking-wider">
+          <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm text-center space-y-4">
+            <div className="flex items-center justify-between text-xs text-slate-500 font-bold uppercase tracking-wider">
               <span>{isHindi ? 'ग्राहक बिल राशि' : 'Customer Bill Amount'}</span>
               {numAmount >= 2000 && (
-                <span className="text-emerald-400 flex items-center gap-1 font-bold">
+                <span className="text-[#00AF71] flex items-center gap-1 font-bold">
                   <Zap className="h-3.5 w-3.5" />
                   <span>{isHindi ? 'ऑटो-स्प्लिट (≤ ₹1,999)' : 'Auto-Splits (≤ ₹1,999)'}</span>
                 </span>
@@ -356,13 +356,13 @@ export default function DukaanMode({
 
             {/* Glowing Big Amount Display with Direct Input Option and Quick Clear */}
             <div className="relative flex items-center justify-center py-2">
-              <span className="text-3xl sm:text-4xl font-extrabold text-emerald-400 mr-2">₹</span>
+              <span className="text-3xl sm:text-4xl font-extrabold text-[#00BAF2] mr-2">₹</span>
               <input
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0"
-                className="w-full max-w-xs text-center text-4xl sm:text-5xl font-extrabold text-white bg-transparent border-b-2 border-emerald-500/50 pb-1 focus:border-emerald-400 focus:outline-none placeholder-gray-600"
+                className="w-full max-w-xs text-center text-4xl sm:text-5xl font-extrabold text-[#002970] bg-transparent border-b-2 border-slate-200 pb-1 focus:border-[#00BAF2] focus:outline-none placeholder-slate-300"
               />
               {amount && (
                 <button
@@ -371,7 +371,7 @@ export default function DukaanMode({
                     soundEffects?.pop(isMuted)
                     setAmount('')
                   }}
-                  className="ml-2 rounded-full p-2 bg-white/10 hover:bg-white/20 text-gray-400 hover:text-white transition active:scale-90"
+                  className="ml-2 rounded-full p-2 bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition active:scale-90"
                   title="Clear amount"
                   aria-label="Clear amount"
                 >
@@ -382,8 +382,8 @@ export default function DukaanMode({
 
             {/* Split Information Pill */}
             {numAmount > 0 && (
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 text-xs text-emerald-300 font-medium">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 border border-sky-200 px-3.5 py-1.5 text-xs text-[#002970] font-medium">
+                <CheckCircle2 className="h-3.5 w-3.5 text-[#00AF71]" />
                 <span>
                   {splits.length === 1
                     ? isHindi
@@ -401,42 +401,42 @@ export default function DukaanMode({
               <button
                 type="button"
                 onClick={() => handleAddAmount(100)}
-                className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-gray-200 hover:bg-white/10 active:scale-95 transition"
+                className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 active:scale-95 transition"
               >
                 +₹100
               </button>
               <button
                 type="button"
                 onClick={() => handleAddAmount(500)}
-                className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-gray-200 hover:bg-white/10 active:scale-95 transition"
+                className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 active:scale-95 transition"
               >
                 +₹500
               </button>
               <button
                 type="button"
                 onClick={() => handleAddAmount(1000)}
-                className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-gray-200 hover:bg-white/10 active:scale-95 transition"
+                className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 active:scale-95 transition"
               >
                 +₹1,000
               </button>
               <button
                 type="button"
                 onClick={() => handleSetAmount(2500)}
-                className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-white/10 active:scale-95 transition"
+                className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-[#002970] hover:bg-sky-100 active:scale-95 transition"
               >
                 ₹2,500
               </button>
               <button
                 type="button"
                 onClick={() => handleSetAmount(3500)}
-                className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-white/10 active:scale-95 transition"
+                className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-[#002970] hover:bg-sky-100 active:scale-95 transition"
               >
                 ₹3,500
               </button>
               <button
                 type="button"
                 onClick={() => handleSetAmount(5000)}
-                className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-white/10 active:scale-95 transition"
+                className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-[#002970] hover:bg-sky-100 active:scale-95 transition"
               >
                 ₹5,000
               </button>
@@ -449,7 +449,7 @@ export default function DukaanMode({
                   key={digit}
                   type="button"
                   onClick={() => handleKeypadPress(digit)}
-                  className="col-span-4 flex items-center justify-center rounded-2xl py-3 text-xl font-bold border border-white/10 bg-white/5 text-white hover:bg-white/10 active:scale-90 transition select-none shadow-md"
+                  className="col-span-4 flex items-center justify-center rounded-2xl py-3 text-xl font-bold border border-slate-200 bg-slate-50 text-[#002970] hover:bg-slate-100 active:scale-90 transition select-none shadow-sm"
                 >
                   {digit}
                 </button>
@@ -459,7 +459,7 @@ export default function DukaanMode({
               <button
                 type="button"
                 onClick={() => handleKeypadPress('C')}
-                className="col-span-3 flex items-center justify-center rounded-2xl py-3 text-sm font-black border border-rose-500/30 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 active:scale-90 transition select-none shadow-md"
+                className="col-span-3 flex items-center justify-center rounded-2xl py-3 text-sm font-black border border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100 active:scale-90 transition select-none shadow-sm"
                 title="Clear All"
               >
                 C
@@ -467,14 +467,14 @@ export default function DukaanMode({
               <button
                 type="button"
                 onClick={() => handleKeypadPress('0')}
-                className="col-span-3 flex items-center justify-center rounded-2xl py-3 text-xl font-bold border border-white/10 bg-white/5 text-white hover:bg-white/10 active:scale-90 transition select-none shadow-md"
+                className="col-span-3 flex items-center justify-center rounded-2xl py-3 text-xl font-bold border border-slate-200 bg-slate-50 text-[#002970] hover:bg-slate-100 active:scale-90 transition select-none shadow-sm"
               >
                 0
               </button>
               <button
                 type="button"
                 onClick={() => handleKeypadPress('00')}
-                className="col-span-3 flex items-center justify-center rounded-2xl py-3 text-base font-bold border border-white/10 bg-white/5 text-white hover:bg-white/10 active:scale-90 transition select-none shadow-md"
+                className="col-span-3 flex items-center justify-center rounded-2xl py-3 text-base font-bold border border-slate-200 bg-slate-50 text-[#002970] hover:bg-slate-100 active:scale-90 transition select-none shadow-sm"
                 title="Add 00"
               >
                 00
@@ -482,7 +482,7 @@ export default function DukaanMode({
               <button
                 type="button"
                 onClick={() => handleKeypadPress('backspace')}
-                className="col-span-3 flex items-center justify-center rounded-2xl py-3 text-xl font-bold border border-white/10 bg-white/5 text-amber-300 hover:bg-white/10 active:scale-90 transition select-none shadow-md"
+                className="col-span-3 flex items-center justify-center rounded-2xl py-3 text-xl font-bold border border-slate-200 bg-slate-50 text-amber-600 hover:bg-slate-100 active:scale-90 transition select-none shadow-sm"
                 title="Delete last digit"
                 aria-label="Backspace"
               >
@@ -496,21 +496,21 @@ export default function DukaanMode({
             type="button"
             disabled={numAmount <= 0}
             onClick={handleStartSplitAndShowQr}
-            className={`w-full flex items-center justify-between rounded-3xl p-4 sm:p-5 text-white shadow-2xl transition-all duration-300 active:scale-98 ${
+            className={`w-full flex items-center justify-between rounded-3xl p-4 sm:p-5 text-white shadow-xl transition-all duration-300 active:scale-98 ${
               numAmount > 0
-                ? 'bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:opacity-95 shadow-emerald-500/25 ring-1 ring-emerald-400/50 cursor-pointer'
-                : 'bg-white/10 text-gray-500 cursor-not-allowed border border-white/5'
+                ? 'bg-[#00BAF2] hover:bg-[#009ecf] shadow-cyan-500/25 cursor-pointer ring-1 ring-cyan-300'
+                : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
             }`}
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-black/20 text-white">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-black/15 text-white">
                 <QrCode className="h-6 w-6" />
               </div>
               <div className="text-left">
                 <h3 className="text-base sm:text-lg font-extrabold tracking-tight">
                   {isHindi ? 'स्प्लिट करें और QR दिखाएं' : 'Split & Show Customer QR'}
                 </h3>
-                <p className="text-xs text-white/80">
+                <p className="text-xs text-white/90">
                   {numAmount > 0
                     ? splits.length === 1
                       ? isHindi
@@ -543,25 +543,25 @@ export default function DukaanMode({
                 soundEffects?.pop(isMuted)
                 setActiveView('keypad')
               }}
-              className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-gray-300 hover:bg-white/10 active:scale-95 transition"
+              className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 active:scale-95 transition shadow-sm"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4 text-[#002970]" />
               <span>{isHindi ? 'कीपैड पर लौटें' : 'Back to Keypad'}</span>
             </button>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-gray-400">
+              <span className="text-xs font-semibold text-slate-500">
                 {isHindi ? 'कुल बिल:' : 'Total Bill:'}{' '}
-                <strong className="text-white font-mono">{formatINR(amount)}</strong>
+                <strong className="text-[#002970] font-mono">{formatINR(amount)}</strong>
               </span>
 
               <button
                 type="button"
                 onClick={handleNextCustomer}
-                className="flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-medium text-gray-300 hover:bg-white/10 active:scale-95 transition"
+                className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 active:scale-95 transition shadow-sm"
                 title="Reset Bill for Next Customer"
               >
-                <RotateCcw className="h-3.5 w-3.5 text-gray-400" />
+                <RotateCcw className="h-3.5 w-3.5 text-slate-400" />
                 <span>{isHindi ? 'नया बिल' : 'Reset'}</span>
               </button>
             </div>
@@ -583,10 +583,10 @@ export default function DukaanMode({
                     }}
                     className={`shrink-0 min-w-[110px] sm:min-w-0 flex-1 rounded-2xl border p-2.5 text-center transition active:scale-95 ${
                       isPaid
-                        ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300'
+                        ? 'border-emerald-300 bg-emerald-50 text-emerald-800'
                         : isCurrent
-                        ? 'border-emerald-400 bg-[#172138] ring-2 ring-emerald-500/40 shadow-lg text-white'
-                        : 'border-white/10 bg-white/5 text-gray-400 hover:bg-white/10'
+                        ? 'border-[#00BAF2] bg-sky-50 ring-2 ring-[#00BAF2]/30 shadow-sm text-[#002970]'
+                        : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'
                     }`}
                   >
                     <div className="flex items-center justify-between text-[11px] font-bold">
@@ -594,9 +594,9 @@ export default function DukaanMode({
                         {isHindi ? `भाग ${part.partNumber}` : `Part ${part.partNumber}`}
                       </span>
                       {isPaid ? (
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                        <CheckCircle2 className="h-3.5 w-3.5 text-[#00AF71]" />
                       ) : (
-                        <Clock className="h-3.5 w-3.5 text-amber-400" />
+                        <Clock className="h-3.5 w-3.5 text-amber-500" />
                       )}
                     </div>
                     <div className="text-xs font-extrabold font-mono mt-0.5">
@@ -610,20 +610,20 @@ export default function DukaanMode({
 
           {/* If All Parts are Fully Paid -> Celebratory Card */}
           {isFullyPaid && (
-            <div className="rounded-3xl border border-emerald-500/40 bg-[#121f24] p-6 sm:p-8 text-center shadow-2xl space-y-5 animate-fadeIn">
-              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border-2 border-emerald-500/40 shadow-lg shadow-emerald-500/20">
+            <div className="rounded-3xl border border-emerald-200 bg-emerald-50/70 p-6 sm:p-8 text-center shadow-sm space-y-5 animate-fadeIn">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 text-[#00AF71] border-2 border-emerald-300 shadow-sm">
                 <CheckCircle2 className="h-10 w-10" />
               </div>
 
               <div>
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300 border border-emerald-500/30 mb-2">
-                  <PartyPopper className="h-3.5 w-3.5" />
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800 border border-emerald-300 mb-2">
+                  <PartyPopper className="h-3.5 w-3.5 text-[#00AF71]" />
                   <span>{isHindi ? 'भुगतान सफल' : 'Payment Complete'}</span>
                 </span>
-                <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-[#002970]">
                   {isHindi ? 'पूरा भुगतान प्राप्त हुआ!' : 'All Payments Received!'}
                 </h3>
-                <p className="text-sm text-gray-300 mt-1">
+                <p className="text-sm text-slate-600 mt-1">
                   {formatINR(amount)}{' '}
                   {splits.length === 1
                     ? isHindi
@@ -636,13 +636,13 @@ export default function DukaanMode({
               </div>
 
               {/* Breakdown Pill */}
-              <div className="rounded-2xl border border-white/10 bg-black/30 p-3.5 text-xs text-gray-300 space-y-1.5">
+              <div className="rounded-2xl border border-slate-200 bg-white p-3.5 text-xs text-slate-700 space-y-1.5 shadow-sm">
                 {splits.map((p) => (
                   <div key={p.partNumber} className="flex justify-between items-center font-mono">
-                    <span className="text-gray-400">
+                    <span className="text-slate-500">
                       Part {p.partNumber} ({formatINR(p.amount)}):
                     </span>
-                    <span className="text-emerald-400 font-bold flex items-center gap-1">
+                    <span className="text-[#00AF71] font-bold flex items-center gap-1">
                       <Check className="h-3 w-3" /> Received
                     </span>
                   </div>
@@ -654,7 +654,7 @@ export default function DukaanMode({
                 <button
                   type="button"
                   onClick={handleNextCustomer}
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 py-4 text-base font-bold text-white shadow-xl shadow-emerald-500/25 hover:opacity-95 active:scale-95 transition"
+                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#00AF71] hover:bg-[#009a63] py-4 text-base font-bold text-white shadow-lg shadow-emerald-500/25 active:scale-95 transition"
                 >
                   <RotateCcw className="h-5 w-5" />
                   <span>{isHindi ? 'नया बिल / अगला ग्राहक' : 'New Bill (Next Customer)'}</span>
@@ -667,9 +667,9 @@ export default function DukaanMode({
                       soundEffects?.pop(isMuted)
                       setShowSettledReview(!showSettledReview)
                     }}
-                    className="flex-1 flex items-center justify-center gap-1.5 rounded-2xl border border-white/10 bg-white/5 py-3 text-xs font-semibold text-gray-300 hover:bg-white/10 active:scale-95 transition"
+                    className="flex-1 flex items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-white py-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 active:scale-95 transition shadow-sm"
                   >
-                    <Eye className="h-4 w-4 text-emerald-400" />
+                    <Eye className="h-4 w-4 text-[#00BAF2]" />
                     <span>
                       {showSettledReview
                         ? isHindi
@@ -687,9 +687,9 @@ export default function DukaanMode({
                       soundEffects?.pop(isMuted)
                       onOpenReceipt()
                     }}
-                    className="flex-1 flex items-center justify-center gap-1.5 rounded-2xl border border-white/10 bg-white/5 py-3 text-xs font-semibold text-gray-300 hover:bg-white/10 active:scale-95 transition"
+                    className="flex-1 flex items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-white py-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 active:scale-95 transition shadow-sm"
                   >
-                    <Receipt className="h-4 w-4 text-emerald-400" />
+                    <Receipt className="h-4 w-4 text-[#00BAF2]" />
                     <span>{isHindi ? 'रसीद देखें' : 'Receipt'}</span>
                   </button>
                 </div>
@@ -699,101 +699,101 @@ export default function DukaanMode({
 
           {/* ACTIVE QR CODE CARD FOR CUSTOMER */}
           {(!isFullyPaid || showSettledReview) && currentPart && (
-              <div className="rounded-3xl border border-white/15 bg-[#121826] p-5 sm:p-7 shadow-2xl text-center space-y-4">
-                {/* Step Banner */}
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-400 text-black text-xs font-black">
-                      {currentPart.partNumber}
-                    </div>
-                    <div className="text-left">
-                      <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-400 block">
-                        {isHindi
-                          ? `कदम ${currentPart.partNumber} / ${splits.length}`
-                          : `Step ${currentPart.partNumber} of ${splits.length}`}
-                      </span>
-                      <span className="text-[11px] text-gray-400">
-                        {isHindi ? 'कस्टमर से कहें स्कैन करें' : 'Customer Scan & Pay'}
-                      </span>
-                    </div>
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-7 shadow-sm text-center space-y-4">
+              {/* Step Banner */}
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#002970] text-white text-xs font-black">
+                    {currentPart.partNumber}
                   </div>
-
-                  <span className="text-xs font-bold text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 rounded-full">
-                    {formatINR(currentPart.amount)}
-                  </span>
-                </div>
-
-                {/* Big Scannable QR Code Canvas with High Contrast */}
-                <div className="rounded-3xl bg-white p-4 shadow-2xl inline-block border-4 border-emerald-500/30">
-                  {qrUrlToDisplay ? (
-                    <img
-                      src={qrUrlToDisplay}
-                      alt={`Scan to Pay Part ${currentPart.partNumber}`}
-                      className="h-64 w-64 sm:h-72 sm:w-72 object-contain rounded-xl"
-                    />
-                  ) : (
-                    <div className="h-64 w-64 flex items-center justify-center text-gray-500 text-xs">
-                      Generating QR...
-                    </div>
-                  )}
-                </div>
-
-                {/* Amount Callout Below QR */}
-                <div>
-                  <div className="text-3xl font-black tracking-tight text-white font-mono">
-                    {formatINR(currentPart.amount)}
-                  </div>
-                  <p className="text-xs text-gray-400 font-mono mt-0.5">
-                    {storeProfile?.storeName} • {storeProfile?.upiId}
-                  </p>
-                </div>
-
-                {/* Supported UPI Apps Bar */}
-                <div className="flex items-center justify-center gap-3 pt-1 border-t border-white/5">
-                  <span className="text-[11px] text-gray-400">
-                    {isHindi ? 'किसी भी UPI से:' : 'Pay using:'}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <GPayIcon className="h-4 w-4" />
-                    <PhonePeIcon className="h-4 w-4" />
-                    <PaytmIcon className="h-4 w-4" />
-                    <BhimIcon className="h-4 w-4" />
-                  </div>
-                </div>
-
-                {/* BIG SHOPKEEPER CONFIRMATION BUTTON WITH SOUNDBOX VOICE */}
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={handleMarkCurrentPaid}
-                    className={`w-full flex items-center justify-center gap-2.5 rounded-2xl py-4 px-4 text-base font-extrabold shadow-xl transition-all duration-200 active:scale-95 ${
-                      paidStatus[safePartIndex]
-                        ? 'bg-emerald-600/30 border border-emerald-500/50 text-emerald-300'
-                        : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-95 text-white shadow-emerald-500/25 ring-1 ring-emerald-400/40'
-                    }`}
-                  >
-                    <CheckCircle2 className="h-6 w-6 shrink-0" />
-                    <span>
-                      {paidStatus[safePartIndex]
-                        ? isHindi
-                          ? `भाग ${currentPart.partNumber} प्राप्त हो गया (Tap to Undo)`
-                          : `Part ${currentPart.partNumber} Marked Paid (Tap to Undo)`
-                        : isHindi
-                        ? `भाग ${currentPart.partNumber} प्राप्त हुआ (${formatINR(currentPart.amount)})`
-                        : `Payment ${currentPart.partNumber} Received (${formatINR(currentPart.amount)})`}
-                    </span>
-                  </button>
-                  <p className="text-[11px] text-gray-400 mt-1.5 flex items-center justify-center gap-1">
-                    <Volume2 className="h-3 w-3 text-emerald-400" />
-                    <span>
+                  <div className="text-left">
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-[#002970] block">
                       {isHindi
-                        ? 'टैप करने पर साउंडबॉक्स बोलकर बताएगा'
-                        : 'Soundbox chime & voice confirmation triggers on tap'}
+                        ? `कदम ${currentPart.partNumber} / ${splits.length}`
+                        : `Step ${currentPart.partNumber} of ${splits.length}`}
                     </span>
-                  </p>
+                    <span className="text-[11px] text-slate-500">
+                      {isHindi ? 'कस्टमर से कहें स्कैन करें' : 'Customer Scan & Pay'}
+                    </span>
+                  </div>
+                </div>
+
+                <span className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+                  {formatINR(currentPart.amount)}
+                </span>
+              </div>
+
+              {/* Big Scannable QR Code Canvas with High Contrast */}
+              <div className="rounded-3xl bg-white p-4 shadow-md inline-block border-2 border-slate-200">
+                {qrUrlToDisplay ? (
+                  <img
+                    src={qrUrlToDisplay}
+                    alt={`Scan to Pay Part ${currentPart.partNumber}`}
+                    className="h-64 w-64 sm:h-72 sm:w-72 object-contain rounded-xl"
+                  />
+                ) : (
+                  <div className="h-64 w-64 flex items-center justify-center text-slate-400 text-xs">
+                    Generating QR...
+                  </div>
+                )}
+              </div>
+
+              {/* Amount Callout Below QR */}
+              <div>
+                <div className="text-3xl font-black tracking-tight text-[#002970] font-mono">
+                  {formatINR(currentPart.amount)}
+                </div>
+                <p className="text-xs text-slate-500 font-mono mt-0.5">
+                  {storeProfile?.storeName} • {storeProfile?.upiId}
+                </p>
+              </div>
+
+              {/* Supported UPI Apps Bar */}
+              <div className="flex items-center justify-center gap-3 pt-1 border-t border-slate-100">
+                <span className="text-[11px] text-slate-500">
+                  {isHindi ? 'किसी भी UPI से:' : 'Pay using:'}
+                </span>
+                <div className="flex items-center gap-2">
+                  <GPayIcon className="h-4 w-4" />
+                  <PhonePeIcon className="h-4 w-4" />
+                  <PaytmIcon className="h-4 w-4" />
+                  <BhimIcon className="h-4 w-4" />
                 </div>
               </div>
-            )}
+
+              {/* BIG SHOPKEEPER CONFIRMATION BUTTON WITH SOUNDBOX VOICE */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={handleMarkCurrentPaid}
+                  className={`w-full flex items-center justify-center gap-2.5 rounded-2xl py-4 px-4 text-base font-extrabold shadow-lg transition-all duration-200 active:scale-95 ${
+                    paidStatus[safePartIndex]
+                      ? 'bg-emerald-50 border border-emerald-300 text-emerald-800'
+                      : 'bg-[#00AF71] hover:bg-[#009a63] text-white shadow-emerald-500/25 ring-1 ring-emerald-400/40'
+                  }`}
+                >
+                  <CheckCircle2 className="h-6 w-6 shrink-0" />
+                  <span>
+                    {paidStatus[safePartIndex]
+                      ? isHindi
+                        ? `भाग ${currentPart.partNumber} प्राप्त हो गया (Tap to Undo)`
+                        : `Part ${currentPart.partNumber} Marked Paid (Tap to Undo)`
+                      : isHindi
+                      ? `भाग ${currentPart.partNumber} प्राप्त हुआ (${formatINR(currentPart.amount)})`
+                      : `Payment ${currentPart.partNumber} Received (${formatINR(currentPart.amount)})`}
+                  </span>
+                </button>
+                <p className="text-[11px] text-slate-500 mt-1.5 flex items-center justify-center gap-1">
+                  <Volume2 className="h-3 w-3 text-[#00AF71]" />
+                  <span>
+                    {isHindi
+                      ? 'टैप करने पर साउंडबॉक्स बोलकर बताएगा'
+                      : 'Soundbox chime & voice confirmation triggers on tap'}
+                  </span>
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

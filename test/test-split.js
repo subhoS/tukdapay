@@ -2,7 +2,7 @@ import assert from 'node:assert'
 import { calculateSplits, isValidUpiId, generateUpiUri, formatINR, SAFE_FEE_FREE_LIMIT } from '../src/utils/upi.js'
 import { soundEffects } from '../src/utils/sound.js'
 
-console.log('[TEST] Starting SplitPe Unit Tests...')
+console.log('[TEST] Starting TukdaPay Unit Tests...')
 
 // Test 1: Validation
 assert.strictEqual(isValidUpiId('sharma@okhdfcbank'), true, 'Valid bank VPA should pass')
@@ -96,7 +96,7 @@ assert(uri.includes('am=1750.00'), 'URI must include formatted amount')
 assert(uri.includes('cu=INR'), 'URI must specify INR')
 
 const defaultNoteUri = generateUpiUri({ pa: 'shop@upi', am: 500 })
-assert(defaultNoteUri.includes('tn=SplitPe+Payment') || defaultNoteUri.includes('tn=SplitPe%20Payment'), 'Default note must be SplitPe Payment')
+assert(defaultNoteUri.includes('tn=TukdaPay+Payment') || defaultNoteUri.includes('tn=TukdaPay%20Payment'), 'Default note must be TukdaPay Payment')
 console.log('[PASS] UPI URI generation tests passed')
 
 // Test 6: High Amount Split (< 2000 tier limit across counter)

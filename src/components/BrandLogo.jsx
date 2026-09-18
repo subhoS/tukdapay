@@ -1,12 +1,13 @@
 import React from 'react'
 
 /**
- * SplitPe Official Vector Brand Logo
- * Features two interlocking geometric ribbons split diagonally, forming an 'S' / Rupee motif.
+ * TukdaPay Official Vector Brand Logo
+ * Paytm-inspired palette: Deep Navy (#002970) + Electric Cyan (#00BAF2)
+ * Features dual interlocking split payment tokens forming a 'T' and Rupee ₹ division motif.
  */
 export function BrandLogoMark({ className = 'h-8 w-8', glowing = true }) {
   return (
-    <div className={`relative flex items-center justify-center shrink-0 ${glowing ? 'drop-shadow-[0_0_12px_rgba(16,185,129,0.35)]' : ''}`}>
+    <div className={`relative flex items-center justify-center shrink-0 ${glowing ? 'drop-shadow-[0_2px_8px_rgba(0,186,242,0.25)]' : ''}`}>
       <svg
         className={className}
         viewBox="0 0 48 48"
@@ -14,52 +15,48 @@ export function BrandLogoMark({ className = 'h-8 w-8', glowing = true }) {
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <linearGradient id="splitpe-grad-a" x1="4" y1="4" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#34d399" />
-            <stop offset="100%" stopColor="#059669" />
+          <linearGradient id="tukda-navy" x1="4" y1="4" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#003893" />
+            <stop offset="100%" stopColor="#002970" />
           </linearGradient>
-          <linearGradient id="splitpe-grad-b" x1="16" y1="16" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#22d3ee" />
-            <stop offset="100%" stopColor="#0d9488" />
+          <linearGradient id="tukda-cyan" x1="16" y1="16" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#00BAF2" />
+            <stop offset="100%" stopColor="#0096C7" />
           </linearGradient>
-          <linearGradient id="splitpe-accent" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+          <linearGradient id="tukda-border" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#E2E8F0" />
+            <stop offset="100%" stopColor="#CBD5E1" />
           </linearGradient>
         </defs>
 
-        {/* Outer squircle container */}
-        <rect width="48" height="48" rx="14" fill="#0f172a" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+        {/* Squircle base */}
+        <rect width="48" height="48" rx="14" fill="#FFFFFF" stroke="url(#tukda-border)" strokeWidth="1.5" />
 
-        {/* Upper Ribbon: Left curved wing of the 'S' and upper split Rupee bar */}
+        {/* Upper Token (Navy Blue) - Horizontal bar and top half */}
         <path
-          d="M12 15C12 12.7909 13.7909 11 16 11H34C35.1046 11 36 11.8954 36 13C36 14.1046 35.1046 15 34 15H24L29.5 21H18C14.6863 21 12 18.3137 12 15Z"
-          fill="url(#splitpe-grad-a)"
+          d="M12 14C12 12.3431 13.3431 11 15 11H33C34.6569 11 36 12.3431 36 14C36 15.6569 34.6569 17 33 17H27V22H18C14.6863 22 12 19.3137 12 16V14Z"
+          fill="url(#tukda-navy)"
         />
 
-        {/* Lower Ribbon: Right curved wing of the 'S' and lower split Rupee diagonal */}
+        {/* Lower Token (Paytm Cyan) - Bottom split chunk */}
         <path
-          d="M36 33C36 35.2091 34.2091 37 32 37H14C12.8954 37 12 36.1046 12 35C12 33.8954 12.8954 33 14 33H24L18.5 27H30C33.3137 27 36 29.6863 36 33Z"
-          fill="url(#splitpe-grad-b)"
+          d="M36 34C36 35.6569 34.6569 37 33 37H15C13.3431 37 12 35.6569 12 34C12 32.3431 13.3431 31 15 31H21V26H30C33.3137 26 36 28.6863 36 32V34Z"
+          fill="url(#tukda-cyan)"
         />
 
-        {/* Central diagonal split slash */}
+        {/* Crisp split separation channel */}
         <path
-          d="M31 15L17 33"
-          stroke="#0f172a"
+          d="M32 16L16 32"
+          stroke="#FFFFFF"
           strokeWidth="3.5"
           strokeLinecap="round"
         />
         <path
-          d="M31 15L17 33"
-          stroke="#ffffff"
+          d="M32 16L16 32"
+          stroke="#00BAF2"
           strokeWidth="1.5"
           strokeLinecap="round"
-          strokeOpacity="0.9"
         />
-
-        {/* Gloss highlight */}
-        <rect width="48" height="48" rx="14" stroke="url(#splitpe-accent)" strokeWidth="1.5" />
       </svg>
     </div>
   )
@@ -68,21 +65,21 @@ export function BrandLogoMark({ className = 'h-8 w-8', glowing = true }) {
 /**
  * Full Brand Lockup with Logo + Typography
  */
-export function BrandLogoFull({ className = '', subtitle = 'Smart UPI Splitter' }) {
+export function BrandLogoFull({ className = '', subtitle = 'Zero-Fee UPI Splitter' }) {
   return (
     <div className={`flex items-center gap-2.5 ${className}`}>
       <BrandLogoMark className="h-8 w-8 sm:h-9 sm:w-9" />
       <div className="flex flex-col text-left">
         <div className="flex items-center gap-1.5 leading-none">
-          <span className="text-base sm:text-lg font-black tracking-tight text-white font-sans">
-            Split<span className="text-emerald-400">Pe</span>
+          <span className="text-base sm:text-lg font-black tracking-tight font-sans text-[#002970]">
+            Tukda<span className="text-[#00BAF2]">Pay</span>
           </span>
-          <span className="rounded-md bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.5 text-[9px] font-extrabold text-emerald-300 uppercase tracking-wide">
-            2K
+          <span className="rounded-md bg-[#E8F7FE] border border-[#00BAF2]/30 px-1.5 py-0.5 text-[9px] font-extrabold text-[#00BAF2] uppercase tracking-wide">
+            UPI
           </span>
         </div>
         {subtitle && (
-          <span className="text-[10px] text-gray-400 font-medium tracking-tight mt-0.5">
+          <span className="text-[10px] text-slate-500 font-medium tracking-tight mt-0.5">
             {subtitle}
           </span>
         )}

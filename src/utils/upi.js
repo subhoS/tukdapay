@@ -1,24 +1,24 @@
 /**
- * UPI Protocol and Utility Helpers for SplitPe
+ * UPI Protocol and Utility Helpers for TukdaPay
  */
 
 /**
  * Standard NPCI UPI Intent URI Generator
  * @param {Object} params
  * @param {string} params.pa - Payee VPA / UPI ID (e.g. merchant@okhdfcbank)
- * @param {string} params.pn - Payee Name (e.g. Sharma Store)
+ * @param {string} params.pn - Payee Name (e.g. Store)
  * @param {number|string} params.am - Amount in INR (e.g. 1750.00)
  * @param {string} params.tn - Transaction Note (e.g. Part 1 of 2)
  * @param {string} [params.cu='INR'] - Currency code
  * @returns {string} Standard UPI URI
  */
-export function generateUpiUri({ pa, pn = 'Merchant', am, tn = 'SplitPe Payment', cu = 'INR' }) {
+export function generateUpiUri({ pa, pn = 'Merchant', am, tn = 'TukdaPay Payment', cu = 'INR' }) {
   if (!pa) return ''
   const cleanPa = pa.trim()
   const cleanPn = (pn || 'Merchant').trim()
   const numAm = Number(am) || 0
   const formattedAm = numAm.toFixed(2)
-  const cleanTn = (tn || 'SplitPe Payment').trim()
+  const cleanTn = (tn || 'TukdaPay Payment').trim()
 
   const params = new URLSearchParams()
   params.set('pa', cleanPa)
@@ -98,7 +98,7 @@ export function calculateSplits(totalAmount, mode = 'smart', customParts = 2) {
       amount: partAmount,
       isZeroFee: partAmount <= SAFE_FEE_FREE_LIMIT,
       isUnder2000: partAmount <= SAFE_FEE_FREE_LIMIT,
-      note: `SplitPe: Part ${i + 1} of ${partsCount}`,
+      note: `TukdaPay: Part ${i + 1} of ${partsCount}`,
     })
   }
 

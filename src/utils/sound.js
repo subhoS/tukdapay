@@ -179,15 +179,15 @@ export const soundEffects = {
 
       if (language === 'hi') {
         if (isFull) {
-          phrase = `SplitPe par poora payment safal! Kul ${roundedAmt} rupaye prapt hue.`
+          phrase = `TukdaPay par poora payment safal! Kul ${roundedAmt} rupaye prapt hue.`
         } else {
-          phrase = `Part ${partNumber} of ${totalParts} prapt hua! ${roundedAmt} rupaye SplitPe par.`
+          phrase = `Part ${partNumber} of ${totalParts} prapt hua! ${roundedAmt} rupaye TukdaPay par.`
         }
       } else {
         if (isFull) {
-          phrase = `Full payment complete! ${roundedAmt} rupees received on SplitPe.`
+          phrase = `Full payment complete! ${roundedAmt} rupees received on TukdaPay.`
         } else {
-          phrase = `Part ${partNumber} of ${totalParts} received! ${roundedAmt} rupees on SplitPe.`
+          phrase = `Part ${partNumber} of ${totalParts} received! ${roundedAmt} rupees on TukdaPay.`
         }
       }
 

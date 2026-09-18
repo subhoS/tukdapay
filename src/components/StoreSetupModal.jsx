@@ -47,26 +47,26 @@ export default function StoreSetupModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
       <div
-        className="relative w-full max-w-md rounded-3xl border border-white/15 bg-[#121826] p-6 shadow-2xl text-left"
+        className="relative w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl text-left"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/10 pb-4">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="rounded-2xl bg-emerald-500/10 p-2.5 text-emerald-400 border border-emerald-500/20">
+            <div className="rounded-2xl bg-sky-50 p-2.5 text-[#002970] border border-sky-100">
               <Store className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Dukaan UPI Setup</h3>
-              <p className="text-xs text-gray-400">Save once, never re-type during checkout</p>
+              <h3 className="text-base font-bold text-[#002970]">Dukaan UPI Setup</h3>
+              <p className="text-xs text-slate-500">Save once, never re-type during checkout</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-white/10 hover:text-white transition"
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition"
           >
             <X className="h-5 w-5" />
           </button>
@@ -75,8 +75,8 @@ export default function StoreSetupModal({
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           {/* Store Name Input */}
           <div>
-            <label className="text-xs font-semibold text-gray-300 block mb-1.5 flex items-center gap-1.5">
-              <Building2 className="h-3.5 w-3.5 text-emerald-400" />
+            <label className="text-xs font-semibold text-slate-700 block mb-1.5 flex items-center gap-1.5">
+              <Building2 className="h-3.5 w-3.5 text-[#00BAF2]" />
               <span>Shop / Business Name</span>
             </label>
             <input
@@ -84,21 +84,21 @@ export default function StoreSetupModal({
               value={storeName}
               onChange={(e) => setStoreName(e.target.value)}
               placeholder="e.g. Verma General Store"
-              className="w-full rounded-xl border border-white/10 bg-black/40 py-2.5 px-3.5 text-sm text-white placeholder-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="w-full rounded-xl border border-slate-300 bg-slate-50 py-2.5 px-3.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#00BAF2] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#00BAF2]"
             />
           </div>
 
           {/* Store UPI ID Input */}
           <div>
-            <label className="text-xs font-semibold text-gray-300 block mb-1.5 flex items-center justify-between">
+            <label className="text-xs font-semibold text-slate-700 block mb-1.5 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                <ShieldCheck className="h-3.5 w-3.5 text-[#00AF71]" />
                 <span>Shop UPI ID (Receiving VPA)</span>
               </span>
               {upiId && (
                 <span
                   className={`text-[11px] font-medium ${
-                    isValidUpiId(upiId) ? 'text-emerald-400' : 'text-amber-400'
+                    isValidUpiId(upiId) ? 'text-[#00AF71]' : 'text-amber-600'
                   }`}
                 >
                   {isValidUpiId(upiId) ? 'Valid UPI ID' : 'Check format'}
@@ -113,18 +113,18 @@ export default function StoreSetupModal({
                 setError('')
               }}
               placeholder="e.g. store@okhdfcbank or 9876543210@paytm"
-              className="w-full rounded-xl border border-white/10 bg-black/40 py-2.5 px-3.5 text-sm text-white font-mono placeholder-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="w-full rounded-xl border border-slate-300 bg-slate-50 py-2.5 px-3.5 text-sm text-slate-900 font-mono placeholder-slate-400 focus:border-[#00BAF2] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#00BAF2]"
             />
 
             {/* Bank Handle Chips */}
             <div className="flex flex-wrap gap-1.5 mt-2">
-              <span className="text-[11px] text-gray-400 py-0.5">Quick handle:</span>
+              <span className="text-[11px] text-slate-400 py-0.5">Quick handle:</span>
               {POPULAR_UPI_HANDLES.slice(0, 6).map((handle) => (
                 <button
                   key={handle}
                   type="button"
                   onClick={() => handleHandleClick(handle)}
-                  className="rounded-md bg-white/5 px-2 py-0.5 text-[11px] font-mono text-emerald-300 hover:bg-white/10 active:scale-95 transition"
+                  className="rounded-md bg-slate-100 border border-slate-200 px-2 py-0.5 text-[11px] font-mono text-[#002970] hover:bg-slate-200 active:scale-95 transition"
                 >
                   {handle}
                 </button>
@@ -133,26 +133,26 @@ export default function StoreSetupModal({
           </div>
 
           {error && (
-            <p className="text-xs text-rose-400 font-medium bg-rose-500/10 border border-rose-500/20 rounded-xl p-2.5">
+            <p className="text-xs text-rose-600 font-medium bg-rose-50 border border-rose-200 rounded-xl p-2.5">
               {error}
             </p>
           )}
 
           {/* Soundbox Test Button */}
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-3 flex items-center justify-between">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="rounded-lg bg-emerald-500/20 p-1.5 text-emerald-400">
+              <div className="rounded-lg bg-sky-100 p-1.5 text-[#002970]">
                 <Volume2 className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-xs font-semibold text-white">Audio Soundbox</p>
-                <p className="text-[11px] text-gray-400">Payment voice & chime feedback</p>
+                <p className="text-xs font-semibold text-[#002970]">Audio Soundbox</p>
+                <p className="text-[11px] text-slate-500">Payment voice & chime feedback</p>
               </div>
             </div>
             <button
               type="button"
               onClick={onTestSoundbox}
-              className="rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2.5 py-1.5 text-xs font-medium text-emerald-300 hover:bg-emerald-500/25 active:scale-95 transition"
+              className="rounded-lg border border-sky-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-[#002970] hover:bg-sky-50 active:scale-95 transition shadow-sm"
             >
               Test Sound
             </button>
@@ -163,13 +163,13 @@ export default function StoreSetupModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs font-semibold text-gray-300 hover:bg-white/10 transition active:scale-95"
+              className="flex-1 rounded-xl border border-slate-200 bg-white py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition active:scale-95 shadow-sm"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-500/25 hover:opacity-95 transition active:scale-95"
+              className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-[#002970] py-2.5 text-xs font-bold text-white shadow-md hover:bg-[#001f57] transition active:scale-95"
             >
               <Check className="h-4 w-4" />
               <span>Save Dukaan Profile</span>
